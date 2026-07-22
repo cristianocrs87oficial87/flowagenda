@@ -33,12 +33,25 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             size,
             fullWidth,
           }),
+          `
+          inline-flex
+          items-center
+          justify-center
+          gap-2
+          rounded-xl
+          font-semibold
+          transition-all
+          duration-200
+          active:scale-[0.98]
+          disabled:cursor-not-allowed
+          disabled:opacity-60
+          `,
           className
         )}
         {...props}
       >
         {loading ? (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          <Loader2 className="h-5 w-5 animate-spin" />
         ) : (
           leftIcon
         )}

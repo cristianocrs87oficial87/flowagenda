@@ -69,20 +69,21 @@ export default function ConfiguracoesPage() {
     await navigator.clipboard.writeText(linkAgendamento);
     alert("✅ Link copiado com sucesso!");
   }
+
   function compartilharWhatsapp() {
-  const mensagem = encodeURIComponent(
-    `Olá! 😊
+    const mensagem = encodeURIComponent(
+      `Olá! 😊
 
 Faça seu agendamento online pelo link abaixo:
 
 ${linkAgendamento}`
-  );
+    );
 
-  window.open(
-    `https://wa.me/?text=${mensagem}`,
-    "_blank"
-  );
-}
+    window.open(
+      `https://wa.me/?text=${mensagem}`,
+      "_blank"
+    );
+  }
 
   function alterarDia(dia: number) {
     if (diasSemana.includes(dia)) {
@@ -191,49 +192,48 @@ ${linkAgendamento}`
           </Button>
 
         </Card>
-
-        {/* LINK DE AGENDAMENTO */}
+                {/* LINK DE AGENDAMENTO */}
 
         <Card className="mt-8 space-y-5">
 
-  <h2 className="text-xl font-bold">
-    🔗 Link de Agendamento
-  </h2>
+          <h2 className="text-xl font-bold">
+            🔗 Link de Agendamento
+          </h2>
 
-  <p className="text-sm text-zinc-500">
-    Compartilhe este link com seus clientes.
-  </p>
+          <p className="text-sm text-zinc-500">
+            Compartilhe este link com seus clientes.
+          </p>
 
-  <Input
-    value={linkAgendamento}
-    readOnly
-  />
+          <Input
+            value={linkAgendamento}
+            readOnly
+          />
 
-  <Button
-    fullWidth
-    onClick={copiarLink}
-  >
-    📋 Copiar Link
-  </Button>
+          <Button
+            fullWidth
+            onClick={copiarLink}
+          >
+            📋 Copiar Link
+          </Button>
 
-  <Button
-    fullWidth
-    onClick={compartilharWhatsapp}
-  >
-    📱 Compartilhar no WhatsApp
-  </Button>
+          <Button
+            fullWidth
+            onClick={compartilharWhatsapp}
+          >
+            📱 Compartilhar no WhatsApp
+          </Button>
 
-  <a
-    href={linkAgendamento}
-    target="_blank"
-    rel="noreferrer"
-  >
-    <Button fullWidth>
-      🌐 Abrir Página de Agendamento
-    </Button>
-  </a>
+          <a
+            href={linkAgendamento}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Button fullWidth>
+              🌐 Abrir Página de Agendamento
+            </Button>
+          </a>
 
-</Card>
+        </Card>
 
       </div>
     </main>

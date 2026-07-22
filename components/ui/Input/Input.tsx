@@ -19,8 +19,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   ) => {
     return (
       <div className="w-full space-y-2">
+
         {label && (
-          <label className="text-sm font-medium text-zinc-700">
+          <label className="block text-sm font-semibold text-zinc-800">
             {label}
           </label>
         )}
@@ -28,7 +29,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <div className="relative">
 
           {leftIcon && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">
               {leftIcon}
             </div>
           )}
@@ -36,18 +37,40 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <input
             ref={ref}
             className={cn(
-              "w-full rounded-lg border border-zinc-300 bg-white px-4 py-3 text-sm outline-none transition-all",
-              "focus:border-violet-600 focus:ring-2 focus:ring-violet-200",
-              leftIcon && "pl-10",
-              rightIcon && "pr-10",
-              error && "border-red-500",
+              `
+              h-12
+              w-full
+              rounded-xl
+              border
+              border-zinc-300
+              bg-white
+              px-4
+              text-base
+              text-zinc-900
+              placeholder:text-zinc-400
+              shadow-sm
+              outline-none
+              transition-all
+              duration-200
+
+              focus:border-violet-600
+              focus:ring-4
+              focus:ring-violet-100
+              `,
+
+              leftIcon && "pl-11",
+              rightIcon && "pr-11",
+
+              error &&
+                "border-red-500 focus:border-red-500 focus:ring-red-100",
+
               className
             )}
             {...props}
           />
 
           {rightIcon && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400">
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500">
               {rightIcon}
             </div>
           )}
@@ -55,7 +78,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         </div>
 
         {error ? (
-          <p className="text-sm text-red-500">
+          <p className="text-sm font-medium text-red-600">
             {error}
           </p>
         ) : (
@@ -65,6 +88,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             </p>
           )
         )}
+
       </div>
     );
   }
