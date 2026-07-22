@@ -18,6 +18,8 @@ export default function ConfiguracoesPage() {
     1, 2, 3, 4, 5,
   ]);
 
+  const [linkAgendamento, setLinkAgendamento] = useState("");
+
   useEffect(() => {
     carregarConfiguracoes();
   }, []);
@@ -31,6 +33,10 @@ export default function ConfiguracoesPage() {
     setHoraFechamento(empresa.hora_fechamento ?? "18:00");
     setIntervalo(empresa.intervalo ?? 30);
     setDiasSemana(empresa.dias_semana ?? [1, 2, 3, 4, 5]);
+
+    setLinkAgendamento(
+      `${window.location.origin}/${empresa.slug}`
+    );
   }
 
   async function salvar() {
@@ -59,6 +65,25 @@ export default function ConfiguracoesPage() {
     alert("Configurações salvas com sucesso!");
   }
 
+  async function copiarLink() {
+    await navigator.clipboard.writeText(linkAgendamento);
+    alert("✅ Link copiado com sucesso!");
+  }
+  function compartilharWhatsapp() {
+  const mensagem = encodeURIComponent(
+    `Olá! 😊
+
+Faça seu agendamento online pelo link abaixo:
+
+${linkAgendamento}`
+  );
+
+  window.open(
+    `https://wa.me/?text=${mensagem}`,
+    "_blank"
+  );
+}
+
   function alterarDia(dia: number) {
     if (diasSemana.includes(dia)) {
       setDiasSemana(diasSemana.filter((d) => d !== dia));
@@ -70,6 +95,7 @@ export default function ConfiguracoesPage() {
   return (
     <main className="min-h-screen bg-zinc-100 p-8">
       <div className="max-w-xl mx-auto">
+
         <h1 className="text-3xl font-bold">
           Configurações da Agenda
         </h1>
@@ -165,6 +191,49 @@ export default function ConfiguracoesPage() {
           </Button>
 
         </Card>
+
+        {/* LINK DE AGENDAMENTO */}
+
+        <Card className="mt-8 space-y-5">
+
+  <h2 className="text-xl font-bold">
+    🔗 Link de Agendamento
+  </h2>
+
+  <p className="text-sm text-zinc-500">
+    Compartilhe este link com seus clientes.
+  </p>
+
+  <Input
+    value={linkAgendamento}
+    readOnly
+  />
+
+  <Button
+    fullWidth
+    onClick={copiarLink}
+  >
+    📋 Copiar Link
+  </Button>
+
+  <Button
+    fullWidth
+    onClick={compartilharWhatsapp}
+  >
+    📱 Compartilhar no WhatsApp
+  </Button>
+
+  <a
+    href={linkAgendamento}
+    target="_blank"
+    rel="noreferrer"
+  >
+    <Button fullWidth>
+      🌐 Abrir Página de Agendamento
+    </Button>
+  </a>
+
+</Card>
 
       </div>
     </main>
