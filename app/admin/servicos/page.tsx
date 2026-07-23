@@ -17,105 +17,90 @@ interface Servico {
 }
 
 export default function ServicosAdminPage() {
+  const [servicos, setServicos] = useState<Servico[]>([]);
+  const [loading, setLoading] = useState(true);
+
   const [nome, setNome] = useState("");
   const [duracao, setDuracao] = useState("");
   const [preco, setPreco] = useState("");
-  const [editandoId, setEditandoId] = useState<string | null>(null);
 
-  const [servicos, setServicos] = useState<Servico[]>([]);
+  const carregarServicos = async () => {
+    const empresa = await empresaAtual();
+
+    if (!empresa) {
+      setLoading(false);
+      return;
+    }
+
+    const { data } = await supabase
+      .from("servicos")
+      .select("*")
+      .eq("empresa_id", empresa.id)
+      .order("nome");
+
+    setServicos(data || []);
+    setLoading(false);
+  };
 
   useEffect(() => {
     carregarServicos();
   }, []);
 
-  async function carregarServicos() {
-  const empresa = await empresaAtual();
+  const salvarServico = async () => {
+    if (!nome || !duracao || !preco) {
+      alert("Preencha todos os campos.");
+      return;
+    }
 
-  if (!empresa) return;
+    const empresa = await empresaAtual();
 
-  const { data, error } = await supabase
-  .from("servicos")
-  .select("*")
-  .eq("empresa_id", empresa.id)
-  .order("nome");
+    if (!empresa) return;
 
-if (error) {
-  console.error(error);
-  return;
-}
+    const { error } = await supabase.from("servicos").insert({
+      empresa_id: empresa.id,
+      nome,
+      duracao: Number(duracao),
+      preco: Number(preco),
+    });
 
-setServicos(data ?? []);
-}
-function editarServico(servico: Servico) {
-  setEditandoId(servico.id);
+    if (error) {
+      alert(error.message);
+      return;
+    }
 
-  setNome(servico.nome);
-  setDuracao(String(servico.duracao));
-  setPreco(String(servico.preco));
-}
-  async function salvarServico() {
-  const empresa = await empresaAtual();
+    setNome("");
+    setDuracao("");
+    setPreco("");
 
-  if (!empresa) {
-    alert("Empresa não encontrada.");
-    return;
-  }
+    carregarServicos();
+  };
 
-  let error;
+  const excluirServico = async (id: string) => {
+    const confirmar = confirm("Deseja realmente excluir este serviço?");
 
-  if (editandoId) {
-    const resposta = await supabase
+    if (!confirmar) return;
+
+    await supabase
       .from("servicos")
-      .update({
-        nome,
-        duracao: Number(duracao),
-        preco: Number(preco),
-      })
-      .eq("id", editandoId);
+      .delete()
+      .eq("id", id);
 
-    error = resposta.error;
-  } else {
-    const resposta = await supabase
-      .from("servicos")
-      .insert({
-        empresa_id: empresa.id,
-        nome,
-        duracao: Number(duracao),
-        preco: Number(preco),
-      });
-
-    error = resposta.error;
-  }
-
-  if (error) {
-    alert(error.message);
-    return;
-  }
-
-  setNome("");
-  setDuracao("");
-  setPreco("");
-  setEditandoId(null);
-
-  await carregarServicos();
-
-  alert(
-    editandoId
-      ? "Serviço atualizado!"
-      : "Serviço cadastrado!"
-  );
-}
-  return (
+    carregarServicos();
+  };
+    return (
     <main className="min-h-screen bg-zinc-100 p-8">
-      <div className="max-w-xl mx-auto">
-        <h1 className="text-4xl font-bold tracking-tight text-zinc-900">
-  Serviços
-</h1>
+      <div className="max-w-5xl mx-auto">
 
-        <p className="mt-3 mb-10 text-base text-zinc-500">
-  Cadastre os serviços do estabelecimento.
-</p>
-        <Card className="space-y-4">
+        <h1 className="text-3xl font-bold">
+          Serviços
+        </h1>
+
+        <p className="text-zinc-500 mt-2 mb-8">
+          Cadastre e gerencie os serviços do seu estabelecimento.
+        </p>
+
+        <Card className="p-6 mb-8 space-y-4">
+
           <Input
             placeholder="Nome do serviço"
             value={nome}
@@ -123,63 +108,71 @@ function editarServico(servico: Servico) {
           />
 
           <Input
-            placeholder="Duração (minutos)"
             type="number"
+            placeholder="Duração (minutos)"
             value={duracao}
             onChange={(e) => setDuracao(e.target.value)}
           />
 
           <Input
-            placeholder="Preço"
             type="number"
+            step="0.01"
+            placeholder="Preço (R$)"
             value={preco}
             onChange={(e) => setPreco(e.target.value)}
           />
 
           <Button
-  fullWidth
-  onClick={salvarServico}
->
-  {editandoId ? "Atualizar Serviço" : "Salvar Serviço"}
-</Button>
+            onClick={salvarServico}
+            className="w-full"
+          >
+            Salvar Serviço
+          </Button>
+
         </Card>
 
-        <div className="mt-8 space-y-4">
-          {servicos.length === 0 ? (
-            <p className="text-center text-zinc-500">
-              Nenhum serviço cadastrado.
-            </p>
-          ) : (
-            servicos.map((servico) => (
-              <Card key={servico.id}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="font-semibold text-lg">
-                      {servico.nome}
-                    </h2>
+        {loading ? (
+          <Card className="p-6 text-center">
+            Carregando...
+          </Card>
+        ) : servicos.length === 0 ? (
+          <Card className="p-6 text-center text-zinc-500">
+            Nenhum serviço cadastrado.
+          </Card>
+        ) : (
+          <div className="space-y-4">
 
-                    <p className="text-sm text-zinc-500">
-                      {servico.duracao} min
-                    </p>
-                  </div>
+            {servicos.map((servico) => (
+              <Card
+                key={servico.id}
+                className="p-5 flex items-center justify-between"
+              >
+                <div>
+                  <h2 className="font-semibold text-lg">
+                    {servico.nome}
+                  </h2>
 
-                  <div className="text-right space-y-2">
-  <p className="font-bold text-violet-700">
-    R$ {servico.preco.toFixed(2)}
-  </p>
+                  <p className="text-zinc-500">
+                    {servico.duracao} min
+                  </p>
 
-  <button
-    onClick={() => editarServico(servico)}
-    className="text-sm text-blue-600 font-medium"
-  >
-    ✏️ Editar
-  </button>
-</div>
+                  <p className="font-bold text-pink-600">
+                    R$ {Number(servico.preco).toFixed(2)}
+                  </p>
                 </div>
+
+                <Button
+  variant="danger"
+  onClick={() => excluirServico(servico.id)}
+>
+  Excluir
+</Button>
               </Card>
-            ))
-          )}
-        </div>
+            ))}
+
+          </div>
+        )}
+
       </div>
     </main>
   );
