@@ -300,7 +300,7 @@ export default function AdminLayout({
 
           {/* PAGE */}
 
-          <section className="flex-1 p-4 pb-24 lg:p-8">
+          <section className="flex-1 px-5 pt-8 pb-24 lg:p-8">
             {children}
           </section>
 

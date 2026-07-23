@@ -79,14 +79,13 @@ setServicos(data ?? []);
   return (
     <main className="min-h-screen bg-zinc-100 p-8">
       <div className="max-w-xl mx-auto">
-        <h1 className="text-3xl font-bold">
-          Serviços
-        </h1>
+        <h1 className="text-4xl font-bold tracking-tight text-zinc-900">
+  Serviços
+</h1>
 
-        <p className="text-zinc-500 mt-2 mb-8">
-          Cadastre os serviços do estabelecimento.
-        </p>
-
+        <p className="mt-3 mb-10 text-base text-zinc-500">
+  Cadastre os serviços do estabelecimento.
+</p>
         <Card className="space-y-4">
           <Input
             placeholder="Nome do serviço"

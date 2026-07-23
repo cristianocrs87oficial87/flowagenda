@@ -35,14 +35,19 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           }),
           `
           inline-flex
+          h-12
           items-center
           justify-center
           gap-2
-          rounded-xl
+          rounded-2xl
+          px-5
           font-semibold
+          tracking-tight
+          shadow-sm
           transition-all
-          duration-200
+          duration-300
           active:scale-[0.98]
+          hover:shadow-lg
           disabled:cursor-not-allowed
           disabled:opacity-60
           `,
