@@ -10,8 +10,28 @@ import {
 } from "lucide-react";
 
 import { Card } from "@/components/ui/Card";
+import { useEffect, useState } from "react";
+import { empresaAtual } from "@/lib/auth";
+import { supabase } from "@/lib/supabase";
 
 export default function DashboardPage() {
+    const [temServicos, setTemServicos] = useState(false);
+    useEffect(() => {
+  async function verificarServicos() {
+    const empresa = await empresaAtual();
+
+    if (!empresa) return;
+
+    const { count } = await supabase
+      .from("servicos")
+      .select("*", { count: "exact", head: true })
+      .eq("empresa_id", empresa.id);
+
+    setTemServicos((count ?? 0) > 0);
+  }
+
+  verificarServicos();
+}, []);
   const cards = [
     {
       titulo: "Agendamentos",
@@ -67,7 +87,11 @@ export default function DashboardPage() {
 
         <div className="mt-6 space-y-4 text-zinc-600">
 
-          <p>✅ Cadastre seus serviços.</p>
+          <p>
+  {temServicos
+    ? "✅ Serviços cadastrados."
+    : "⬜ Cadastre seus serviços."}
+</p>
 
           <p>✅ Configure os horários da agenda.</p>
 
