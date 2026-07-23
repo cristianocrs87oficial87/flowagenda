@@ -163,11 +163,18 @@ function editarServico(servico: Servico) {
                     </p>
                   </div>
 
-                  <div className="text-right">
-                    <p className="font-bold text-violet-700">
-                      R$ {servico.preco.toFixed(2)}
-                    </p>
-                  </div>
+                  <div className="text-right space-y-2">
+  <p className="font-bold text-violet-700">
+    R$ {servico.preco.toFixed(2)}
+  </p>
+
+  <button
+    onClick={() => editarServico(servico)}
+    className="text-sm text-blue-600 font-medium"
+  >
+    ✏️ Editar
+  </button>
+</div>
                 </div>
               </Card>
             ))
