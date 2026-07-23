@@ -59,6 +59,26 @@ export default function DashboardPage() {
 
       </div>
 
+      <Card>
+
+        <h2 className="text-2xl font-bold">
+          🚀 Próximos passos
+        </h2>
+
+        <div className="mt-6 space-y-4 text-zinc-600">
+
+          <p>✅ Cadastre seus serviços.</p>
+
+          <p>✅ Configure os horários da agenda.</p>
+
+          <p>✅ Compartilhe seu link de agendamento.</p>
+
+          <p>✅ Comece a receber clientes online.</p>
+
+        </div>
+
+      </Card>
+
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
 
         {cards.map((card) => {
@@ -98,25 +118,6 @@ export default function DashboardPage() {
 
       </div>
 
-      <Card>
-
-        <h2 className="text-2xl font-bold">
-          🚀 Próximos passos
-        </h2>
-
-        <div className="mt-6 space-y-4 text-zinc-600">
-
-          <p>✅ Cadastre seus serviços.</p>
-
-          <p>✅ Configure os horários da agenda.</p>
-
-          <p>✅ Compartilhe seu link de agendamento.</p>
-
-          <p>✅ Comece a receber clientes online.</p>
-
-        </div>
-
-      </Card>
 
     </main>
   );
