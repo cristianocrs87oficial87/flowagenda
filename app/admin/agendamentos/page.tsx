@@ -29,37 +29,49 @@ export default function AgendamentosPage() {
   const [loading, setLoading] = useState(true);
 
   async function carregarAgendamentos() {
-    setLoading(true);
+  setLoading(true);
 
-    const empresaId = await empresaAtual();
+  const empresa = await empresaAtual();
 
-    const { data, error } = await supabase
-      .from("agendamentos")
-      .select(`
-        id,
-        cliente_nome,
-        cliente_whatsapp,
-        data,
-        horario,
-        status,
-        servicos (
-          nome,
-          preco
-        ),
-        profissionais (
-          nome
-        )
-      `)
-      .eq("empresa_id", empresaId)
-      .order("data", { ascending: false })
-      .order("horario", { ascending: false });
+  if (!empresa) {
+    setLoading(false);
+    return;
+  }
 
-    if (!error && data) {
-  setAgendamentos(data as unknown as Agendamento[]);
+  const { data, error } = await supabase
+    .from("agendamentos")
+    .select(`
+      id,
+      cliente_nome,
+      cliente_whatsapp,
+      data,
+      horario,
+      status,
+      servicos (
+        nome,
+        preco
+      ),
+      profissionais (
+        nome
+      )
+    `)
+    .eq("empresa_id", empresa.id)
+    .order("data", { ascending: false })
+    .order("horario", { ascending: false });
+    console.log("DATA:", data);
+console.log("ERROR:", error);
+
+  if (error) {
+    console.error(error);
+  }
+
+  if (data) {
+    setAgendamentos(data as Agendamento[]);
+  }
+
+  setLoading(false);
 }
 
-    setLoading(false);
-  }
 
   async function alterarStatus(id: number, status: string) {
     await supabase
