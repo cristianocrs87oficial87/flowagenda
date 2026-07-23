@@ -10,6 +10,7 @@ import {
   CalendarDays,
   Users,
   BriefcaseBusiness,
+  UserRound,
   Settings,
   LogOut,
   Menu,
@@ -34,6 +35,11 @@ const menu: MenuItem[] = [
     name: "Agendamentos",
     href: "/admin/agendamentos",
     icon: CalendarDays,
+  },
+  {
+    name: "Profissionais",
+    href: "/admin/profissionais",
+    icon: UserRound,
   },
   {
     name: "Serviços",
