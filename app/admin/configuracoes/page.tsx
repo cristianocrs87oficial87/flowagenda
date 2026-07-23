@@ -94,8 +94,7 @@ ${linkAgendamento}`
   }
 
   return (
-    <main className="min-h-screen bg-zinc-100 p-8">
-      <div className="max-w-xl mx-auto">
+  <div className="max-w-xl mx-auto text-zinc-900">
 
         <h1 className="text-3xl font-bold">
           Configurações da Agenda
@@ -235,7 +234,6 @@ ${linkAgendamento}`
 
         </Card>
 
-      </div>
-    </main>
-  );
+          </div>
+);
 }

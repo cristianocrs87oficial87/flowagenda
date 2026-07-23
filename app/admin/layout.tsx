@@ -79,10 +79,10 @@ export default function AdminLayout({
       }
 
       const { data } = await supabase
-        .from("empresas")
-        .select("*")
-        .eq("user_id", session.user.id)
-        .single();
+  .from("empresas")
+  .select("*")
+  .eq("usuario_id", session.user.id)
+  .single();
 
       setEmpresa(data);
       setLoading(false);

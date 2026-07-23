@@ -1,432 +1,302 @@
 "use client";
-import { empresaAtual } from "@/lib/auth";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 import { supabase } from "@/lib/supabase";
-
-import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
+import { empresaAtual } from "@/lib/auth";
 
 interface Agendamento {
-  id: string;
+  id: number;
   cliente_nome: string;
   cliente_whatsapp: string;
   data: string;
   horario: string;
   status: string;
 
-  servico_id: string;
-  profissional_id: string;
+  servicos: {
+    nome: string;
+    preco: number;
+  } | null;
 
-  servico_nome?: string;
-  profissional_nome?: string;
+  profissionais: {
+    nome: string;
+  } | null;
 }
 
-function formatarData(data: string) {
-  return new Date(data).toLocaleDateString("pt-BR");
-}
-export default function AgendamentosAdminPage() {
+export default function AgendamentosPage() {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [loading, setLoading] = useState(true);
-  const [servicos, setServicos] = useState<Record<string, string>>({});
-const [profissionais, setProfissionais] = useState<Record<string, string>>({});
-const [hoje, setHoje] = useState(0);
-const [confirmados, setConfirmados] = useState(0);
-const [finalizados, setFinalizados] = useState(0);
-const [cancelados, setCancelados] = useState(0);
-const [filtro, setFiltro] = useState("todos");
-const [busca, setBusca] = useState("");
+
+  async function carregarAgendamentos() {
+    setLoading(true);
+
+    const empresaId = await empresaAtual();
+
+    const { data, error } = await supabase
+      .from("agendamentos")
+      .select(`
+        id,
+        cliente_nome,
+        cliente_whatsapp,
+        data,
+        horario,
+        status,
+        servicos (
+          nome,
+          preco
+        ),
+        profissionais (
+          nome
+        )
+      `)
+      .eq("empresa_id", empresaId)
+      .order("data", { ascending: false })
+      .order("horario", { ascending: false });
+
+    if (!error && data) {
+      setAgendamentos(data as Agendamento[]);
+    }
+
+    setLoading(false);
+  }
+
+  async function alterarStatus(id: number, status: string) {
+    await supabase
+      .from("agendamentos")
+      .update({ status })
+      .eq("id", id);
+
+    carregarAgendamentos();
+  }
+
+  async function excluirAgendamento(id: number) {
+    const confirmar = window.confirm(
+      "Deseja realmente excluir este agendamento?"
+    );
+
+    if (!confirmar) return;
+
+    await supabase
+      .from("agendamentos")
+      .delete()
+      .eq("id", id);
+
+    carregarAgendamentos();
+  }
 
   useEffect(() => {
     carregarAgendamentos();
   }, []);
 
-  async function carregarAgendamentos() {
-    setLoading(true);
-
-    const empresa = await empresaAtual();
-
-if (!empresa) {
-  setLoading(false);
-  return;
-}
-    const { data, error } = await supabase
-  .from("agendamentos")
-  .select(`
-  id,
-  cliente_nome,
-  cliente_whatsapp,
-  data,
-  horario,
-  status,
-  servico_id,
-  profissional_id
-`)
-  .eq("empresa_id", empresa.id)
-  .order("data", { ascending: false })
-.order("horario", { ascending: true });
-  if (error) {
-  console.error(error);
-  setLoading(false);
-  return;
-}
-
-const { data: listaServicos } = await supabase
-  .from("servicos")
-  .select("id, nome")
-  .eq("empresa_id", empresa.id);
-
-const mapaServicos: Record<string, string> = {};
-
-listaServicos?.forEach((servico) => {
-  mapaServicos[servico.id] = servico.nome;
-});
-
-setServicos(mapaServicos);
-
-const { data: listaProfissionais } = await supabase
-  .from("profissionais")
-  .select("id, nome")
-  .eq("empresa_id", empresa.id);
-  
-const mapaProfissionais: Record<string, string> = {};
-
-listaProfissionais?.forEach((profissional) => {
-  mapaProfissionais[profissional.id] = profissional.nome;
-});
-
-setProfissionais(mapaProfissionais);
-console.log("Agendamentos", data);
-console.log("Mapa Serviços", mapaServicos);
-console.log("Mapa Profissionais", mapaProfissionais);
-    setAgendamentos((data as Agendamento[]) ?? []);
-    const lista = (data as Agendamento[]) ?? [];
-
-const hojeData = new Date().toISOString().split("T")[0];
-
-setHoje(
-  lista.filter((a) => a.data === hojeData).length
-);
-
-setConfirmados(
-  lista.filter((a) => a.status === "confirmado").length
-);
-
-setFinalizados(
-  lista.filter((a) => a.status === "finalizado").length
-);
-
-setCancelados(
-  lista.filter((a) => a.status === "cancelado").length
-);
-    setLoading(false);
-  }
-
-  async function alterarStatus(
-    id: string,
-    status: string
-  ) {
-    const { error } = await supabase
-      .from("agendamentos")
-      .update({
-        status,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", id);
-
-    if (error) {
-      alert(error.message);
-      return;
-    }
-
-    carregarAgendamentos();
-  }
-
-  function corStatus(status: string) {
-    switch (status) {
-      case "confirmado":
-        return "bg-blue-100 text-blue-700";
-
-      case "finalizado":
-        return "bg-green-100 text-green-700";
-
-      case "cancelado":
-        return "bg-red-100 text-red-700";
-
-      default:
-        return "bg-yellow-100 text-yellow-700";
-    }
-  }
-const hojeData = new Date().toISOString().split("T")[0];
-
-const agendamentosFiltrados = agendamentos.filter((agendamento) => {
-  const passouFiltro = (() => {
-    switch (filtro) {
-      case "hoje":
-        return agendamento.data === hojeData;
-
-      case "agendado":
-        return agendamento.status === "agendado";
-
-      case "confirmado":
-        return agendamento.status === "confirmado";
-
-      case "finalizado":
-        return agendamento.status === "finalizado";
-
-      case "cancelado":
-        return agendamento.status === "cancelado";
-
-      default:
-        return true;
-    }
-  })();
-
-  const textoBusca = busca.toLowerCase();
-
-  const passouBusca =
-    agendamento.cliente_nome.toLowerCase().includes(textoBusca) ||
-    agendamento.cliente_whatsapp.includes(textoBusca) ||
-    (servicos[agendamento.servico_id] ?? "")
-      .toLowerCase()
-      .includes(textoBusca) ||
-    (profissionais[agendamento.profissional_id] ?? "")
-      .toLowerCase()
-      .includes(textoBusca);
-
-  return passouFiltro && passouBusca;
-});
- (
+  return (
     <main className="min-h-screen bg-zinc-100 p-8">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-7xl mx-auto">
 
-        <h1 className="text-3xl font-bold">
-          Agendamentos
-        </h1>
+        <div className="flex items-center justify-between mb-8">
 
-        <p className="text-zinc-500 mt-2 mb-8">
-          Gerencie todos os agendamentos.
-        </p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl font-bold">
+              Agendamentos
+            </h1>
 
-  <Card className="text-center">
-    <p className="text-sm text-zinc-500">
-      Hoje
-    </p>
+            <p className="text-zinc-500 mt-2">
+              Gerencie todos os agendamentos da empresa.
+            </p>
+          </div>
 
-    <h2 className="text-3xl font-bold text-violet-700">
-      {hoje}
-    </h2>
-  </Card>
+          <Link
+            href="/admin"
+            className="px-4 py-2 rounded-xl bg-zinc-900 text-white hover:bg-zinc-800 transition"
+          >
+            Voltar
+          </Link>
 
-  <Card className="text-center">
-    <p className="text-sm text-zinc-500">
-      Confirmados
-    </p>
+        </div>
 
-    <h2 className="text-3xl font-bold text-blue-600">
-      {confirmados}
-    </h2>
-  </Card>
+        <div className="bg-white rounded-2xl shadow overflow-hidden">
 
-  <Card className="text-center">
-    <p className="text-sm text-zinc-500">
-      Finalizados
-    </p>
+          {loading ? (
 
-    <h2 className="text-3xl font-bold text-green-600">
-      {finalizados}
-    </h2>
-  </Card>
+            <div className="p-8 text-center">
+              Carregando...
+            </div>
 
-  <Card className="text-center">
-    <p className="text-sm text-zinc-500">
-      Cancelados
-    </p>
+          ) : agendamentos.length === 0 ? (
 
-    <h2 className="text-3xl font-bold text-red-600">
-      {cancelados}
-    </h2>
-  </Card>
+            <div className="p-8 text-center text-zinc-500">
+              Nenhum agendamento encontrado.
+            </div>
 
-</div>
+          ) : (
 
-        {loading && (
-          <p>Carregando...</p>
-        )}
+            <table className="w-full">
 
-        {!loading && agendamentos.length === 0 && (
-          <p className="text-center text-zinc-500">
-            Nenhum agendamento encontrado.
-          </p>
-        )}
+              <thead className="bg-zinc-100">
 
-        <div className="space-y-4">
-            <div className="mb-6">
-  <input
-    type="text"
-    placeholder="🔍 Buscar cliente, telefone, serviço ou profissional..."
-    value={busca}
-    onChange={(e) => setBusca(e.target.value)}
-    className="w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-violet-500"
-  />
-</div>
-            <div className="flex flex-wrap gap-2 mb-6">
+                <tr className="text-left text-sm">
 
-  <Button
-  className={filtro === "todos" ? "bg-violet-600 text-white" : ""}
-  onClick={() => setFiltro("todos")}
->
-  Todos
-</Button>
+                  <th className="p-4">Cliente</th>
 
-<Button
-  className={filtro === "hoje" ? "bg-violet-600 text-white" : ""}
-  onClick={() => setFiltro("hoje")}
->
-  Hoje
-</Button>
+                  <th className="p-4">
+                    WhatsApp
+                  </th>
 
-<Button
-  className={filtro === "agendado" ? "bg-violet-600 text-white" : ""}
-  onClick={() => setFiltro("agendado")}
->
-  Agendados
-</Button>
+                  <th className="p-4">
+                    Serviço
+                  </th>
 
-<Button
-  className={filtro === "confirmado" ? "bg-violet-600 text-white" : ""}
-  onClick={() => setFiltro("confirmado")}
->
-  Confirmados
-</Button>
+                  <th className="p-4">
+                    Profissional
+                  </th>
 
-<Button
-  className={filtro === "finalizado" ? "bg-violet-600 text-white" : ""}
-  onClick={() => setFiltro("finalizado")}
->
-  Finalizados
-</Button>
+                  <th className="p-4">
+                    Data
+                  </th>
 
-<Button
-  className={filtro === "cancelado" ? "bg-violet-600 text-white" : ""}
-  onClick={() => setFiltro("cancelado")}
->
-  Cancelados
-</Button>
+                  <th className="p-4">
+                    Horário
+                  </th>
 
-</div>
+                  <th className="p-4">
+                    Valor
+                  </th>
 
-          {agendamentosFiltrados.map((agendamento) => (
+                  <th className="p-4">
+                    Status
+                  </th>
 
-            <Card key={agendamento.id}>
+                  <th className="p-4 text-center">
+                    Ações
+                  </th>
 
-              <div className="flex items-start justify-between">
+                </tr>
 
-                <div>
+              </thead>
 
-                  <h2 className="font-bold text-lg">
-                    {agendamento.cliente_nome}
-                  </h2>
-
-                  <p className="text-sm text-zinc-500">
-                    {agendamento.cliente_whatsapp}
-                  </p>
-                  <a
-  href={`https://wa.me/55${agendamento.cliente_whatsapp.replace(/\D/g, "")}`}
-  target="_blank"
-  rel="noopener noreferrer"
-  className="inline-flex items-center mt-2 text-sm font-medium text-green-600 hover:text-green-700"
->
-  💬 Conversar no WhatsApp
-</a>
-
-                  <p className="mt-2">
-  <strong>Serviço:</strong>{" "}
-  {servicos[agendamento.servico_id] ?? "-"}
-</p>
-
-<p>
-  <strong>Profissional:</strong>{" "}
-  {profissionais[agendamento.profissional_id] ?? "-"}
-</p>
-
-                  <p>
-  <strong>Data:</strong>{" "}
-  {formatarData(agendamento.data)}
-</p>
-
-                  <p>
-  <strong>Horário:</strong>{" "}
-  {agendamento.horario.slice(0, 5)}
-</p>
-
-                </div>
-
-                <div className="text-right">
-
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-semibold ${corStatus(
-                      agendamento.status
-                    )}`}
+                              <tbody>
+                                {agendamentos.map((agendamento) => (
+                  <tr
+                    key={agendamento.id}
+                    className="border-t hover:bg-zinc-50 transition"
                   >
-                    {agendamento.status}
-                  </span>
+                    <td className="p-4 font-medium">
+                      {agendamento.cliente_nome}
+                    </td>
 
-                  <div className="mt-4 space-y-2">
+                    <td className="p-4">
+                      {agendamento.cliente_whatsapp}
+                    </td>
 
-                    {agendamento.status === "agendado" && (
-                      <>
-                        <Button
-                          fullWidth
+                    <td className="p-4">
+                      {agendamento.servicos?.nome ?? "-"}
+                    </td>
+
+                    <td className="p-4">
+                      {agendamento.profissionais?.nome ?? "-"}
+                    </td>
+
+                    <td className="p-4">
+                      {new Date(
+                        `${agendamento.data}T00:00:00`
+                      ).toLocaleDateString("pt-BR")}
+                    </td>
+
+                    <td className="p-4">
+                      {agendamento.horario}
+                    </td>
+
+                    <td className="p-4">
+                      {agendamento.servicos
+                        ? `R$ ${agendamento.servicos.preco.toFixed(2)}`
+                        : "-"}
+                    </td>
+
+                    <td className="p-4">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold
+                          ${
+                            agendamento.status === "Agendado"
+                              ? "bg-blue-100 text-blue-700"
+                              : ""
+                          }
+                          ${
+                            agendamento.status === "Confirmado"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : ""
+                          }
+                          ${
+                            agendamento.status === "Finalizado"
+                              ? "bg-green-100 text-green-700"
+                              : ""
+                          }
+                          ${
+                            agendamento.status === "Cancelado"
+                              ? "bg-red-100 text-red-700"
+                              : ""
+                          }
+                        `}
+                      >
+                        {agendamento.status}
+                      </span>
+                    </td>
+
+                    <td className="p-4">
+                      <div className="flex flex-wrap justify-center gap-2">
+
+                        <button
                           onClick={() =>
                             alterarStatus(
                               agendamento.id,
-                              "confirmado"
+                              "Confirmado"
                             )
                           }
+                          className="px-3 py-1 rounded-lg bg-yellow-500 text-white text-sm hover:bg-yellow-600 transition"
                         >
                           Confirmar
-                        </Button>
+                        </button>
 
-                        <Button
-                          fullWidth
+                        <button
                           onClick={() =>
                             alterarStatus(
                               agendamento.id,
-                              "cancelado"
+                              "Finalizado"
                             )
                           }
+                          className="px-3 py-1 rounded-lg bg-green-600 text-white text-sm hover:bg-green-700 transition"
+                        >
+                          Finalizar
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            alterarStatus(
+                              agendamento.id,
+                              "Cancelado"
+                            )
+                          }
+                          className="px-3 py-1 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600 transition"
                         >
                           Cancelar
-                        </Button>
-                      </>
-                    )}
+                        </button>
 
-                    {agendamento.status === "confirmado" && (
-                      <Button
-                        fullWidth
-                        onClick={() =>
-                          alterarStatus(
-                            agendamento.id,
-                            "finalizado"
-                          )
-                        }
-                      >
-                        Finalizar
-                      </Button>
-                    )}
+                        <button
+                          onClick={() =>
+                            excluirAgendamento(agendamento.id)
+                          }
+                          className="px-3 py-1 rounded-lg bg-zinc-800 text-white text-sm hover:bg-black transition"
+                        >
+                          Excluir
+                        </button>
 
-                  </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-                </div>
-
-              </div>
-
-            </Card>
-
-          ))}
+          )}
 
         </div>
 
