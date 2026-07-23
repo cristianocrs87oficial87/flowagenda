@@ -20,6 +20,7 @@ export default function ServicosAdminPage() {
   const [nome, setNome] = useState("");
   const [duracao, setDuracao] = useState("");
   const [preco, setPreco] = useState("");
+  const [editandoId, setEditandoId] = useState<string | null>(null);
 
   const [servicos, setServicos] = useState<Servico[]>([]);
 
@@ -45,7 +46,13 @@ if (error) {
 
 setServicos(data ?? []);
 }
+function editarServico(servico: Servico) {
+  setEditandoId(servico.id);
 
+  setNome(servico.nome);
+  setDuracao(String(servico.duracao));
+  setPreco(String(servico.preco));
+}
   async function salvarServico() {
   const empresa = await empresaAtual();
 
@@ -54,14 +61,31 @@ setServicos(data ?? []);
     return;
   }
 
-  const { error } = await supabase
-    .from("servicos")
-    .insert({
-      empresa_id: empresa.id,
-      nome,
-      duracao: Number(duracao),
-      preco: Number(preco),
-    });
+  let error;
+
+  if (editandoId) {
+    const resposta = await supabase
+      .from("servicos")
+      .update({
+        nome,
+        duracao: Number(duracao),
+        preco: Number(preco),
+      })
+      .eq("id", editandoId);
+
+    error = resposta.error;
+  } else {
+    const resposta = await supabase
+      .from("servicos")
+      .insert({
+        empresa_id: empresa.id,
+        nome,
+        duracao: Number(duracao),
+        preco: Number(preco),
+      });
+
+    error = resposta.error;
+  }
 
   if (error) {
     alert(error.message);
@@ -71,10 +95,15 @@ setServicos(data ?? []);
   setNome("");
   setDuracao("");
   setPreco("");
+  setEditandoId(null);
 
   await carregarServicos();
 
-  alert("Serviço cadastrado com sucesso!");
+  alert(
+    editandoId
+      ? "Serviço atualizado!"
+      : "Serviço cadastrado!"
+  );
 }
   return (
     <main className="min-h-screen bg-zinc-100 p-8">
@@ -108,11 +137,11 @@ setServicos(data ?? []);
           />
 
           <Button
-            fullWidth
-            onClick={salvarServico}
-          >
-            Salvar Serviço
-          </Button>
+  fullWidth
+  onClick={salvarServico}
+>
+  {editandoId ? "Atualizar Serviço" : "Salvar Serviço"}
+</Button>
         </Card>
 
         <div className="mt-8 space-y-4">
