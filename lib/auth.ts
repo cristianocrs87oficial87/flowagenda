@@ -54,11 +54,16 @@ export async function empresaAtual() {
 
   if (!user) return null;
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("empresas")
     .select("*")
     .eq("usuario_id", user.id)
-    .single();
+    .maybeSingle();
+
+  if (error) {
+    console.error("empresaAtual:", error);
+    return null;
+  }
 
   return data;
 }

@@ -272,6 +272,79 @@ ${linkAgendamento}`
           <p className="mt-3 text-xs text-zinc-500">
             PNG, JPG ou WEBP
           </p>
+          
+          <div className="mt-8 w-full">
+  <label className="font-medium">
+    Nome do estabelecimento
+  </label>
+
+  <Input
+    value={nomeEmpresa}
+    onChange={(e) => setNomeEmpresa(e.target.value)}
+    placeholder="Ex.: Barbearia BC"
+  />
+  <div className="mt-4">
+  <label className="font-medium">
+    Descrição
+  </label>
+
+  <textarea
+    className="w-full rounded-lg border border-zinc-300 p-3 mt-2"
+    rows={3}
+    value={descricao}
+    onChange={(e) => setDescricao(e.target.value)}
+    placeholder="Ex.: Especialistas em cortes masculinos."
+  />
+</div>
+<div className="mt-4">
+  <label className="font-medium">
+    WhatsApp
+  </label>
+
+  <Input
+    value={whatsapp}
+    onChange={(e) => setWhatsapp(e.target.value)}
+    placeholder="(11) 99999-9999"
+  />
+</div>
+<div className="mt-4">
+  <label className="font-medium">
+    Instagram
+  </label>
+
+  <Input
+    value={instagram}
+    onChange={(e) => setInstagram(e.target.value)}
+    placeholder="@seuinstagram"
+  />
+</div>
+<div className="mt-4">
+  <label className="flex items-center gap-2">
+    <input
+      type="checkbox"
+      checked={mostrarWhatsapp}
+      onChange={(e) =>
+        setMostrarWhatsapp(e.target.checked)
+      }
+    />
+
+    Mostrar botão do WhatsApp
+  </label>
+</div>
+<div className="mt-4">
+  <label className="flex items-center gap-2">
+    <input
+      type="checkbox"
+      checked={mostrarInstagram}
+      onChange={(e) =>
+        setMostrarInstagram(e.target.checked)
+      }
+    />
+
+    Mostrar botão do Instagram
+  </label>
+</div>
+</div>
 
         </div>
 
