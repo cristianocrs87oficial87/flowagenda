@@ -97,42 +97,43 @@ export default function EmpresaPage() {
               </Button>
             </Link>
           </div>
+<div className="mt-5 flex items-center justify-center gap-3 flex-wrap">
 
-        </Card>
-      </main>
-{empresa.mostrar_whatsapp && empresa.telefone && (
-  <a
-    href={`https://wa.me/55${empresa.telefone.replace(/\D/g, "")}`}
-    target="_blank"
-    rel="noopener noreferrer"
-    aria-label="WhatsApp"
-    className="fixed bottom-6 right-6 z-50 group"
-  >
-    <div className="w-16 h-16 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-2xl transition-all duration-300 group-hover:scale-110 group-hover:shadow-green-400/50 animate-pulse">
-      <FaWhatsapp size={34} />
-    </div>
-  </a>
-)}
+  {empresa.mostrar_whatsapp && empresa.telefone && (
+    <a
+      href={`https://wa.me/55${empresa.telefone.replace(/\D/g, "")}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-2 text-white shadow-md hover:scale-105 transition-all duration-300"
+    >
+      <FaWhatsapp size={18} />
+      <span className="text-sm font-medium">
+        WhatsApp
+      </span>
+    </a>
+  )}
 
-{empresa.mostrar_instagram && empresa.instagram && (
-  <a
-    href={`https://instagram.com/${empresa.instagram.replace("@", "")}`}
-    target="_blank"
-    rel="noopener noreferrer"
-    aria-label="Instagram"
-    className="fixed bottom-28 right-6 z-50 group"
-  >
-    <div
-      className="w-16 h-16 rounded-full text-white flex items-center justify-center shadow-2xl transition-all duration-300 group-hover:scale-110"
+  {empresa.mostrar_instagram && empresa.instagram && (
+    <a
+      href={`https://instagram.com/${empresa.instagram.replace("@", "")}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-2 rounded-full px-4 py-2 text-white shadow-md hover:scale-105 transition-all duration-300"
       style={{
         background:
-          "linear-gradient(135deg,#f58529,#feda77,#dd2a7b,#8134af,#515bd4)",
+          "linear-gradient(90deg,#F58529,#DD2A7B,#8134AF,#515BD4)",
       }}
     >
-      <FaInstagram size={32} />
-    </div>
-  </a>
-)}
+      <FaInstagram size={18} />
+      <span className="text-sm font-medium">
+        Instagram
+      </span>
+    </a>
+  )}
+
+</div>
+        </Card>
+      </main>
     </>
   );
 }
