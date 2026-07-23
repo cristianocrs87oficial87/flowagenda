@@ -19,6 +19,13 @@ export default function ConfiguracoesPage() {
   ]);
 
   const [linkAgendamento, setLinkAgendamento] = useState("");
+  const [nomeEmpresa, setNomeEmpresa] = useState("");
+const [descricao, setDescricao] = useState("");
+const [whatsapp, setWhatsapp] = useState("");
+const [instagram, setInstagram] = useState("");
+
+const [mostrarWhatsapp, setMostrarWhatsapp] = useState(true);
+const [mostrarInstagram, setMostrarInstagram] = useState(true);
 
   // ==========================
   // LOGO DA EMPRESA (Preview)
@@ -42,6 +49,18 @@ export default function ConfiguracoesPage() {
     setHoraFechamento(empresa.hora_fechamento ?? "18:00");
     setIntervalo(empresa.intervalo ?? 30);
     setDiasSemana(empresa.dias_semana ?? [1, 2, 3, 4, 5]);
+    setNomeEmpresa(empresa.nome ?? "");
+setDescricao((empresa as any).descricao ?? "");
+setWhatsapp(empresa.telefone ?? "");
+setInstagram((empresa as any).instagram ?? "");
+
+setMostrarWhatsapp(
+  (empresa as any).mostrar_whatsapp ?? true
+);
+
+setMostrarInstagram(
+  (empresa as any).mostrar_instagram ?? true
+);
 
     setLinkAgendamento(
       `${window.location.origin}/${empresa.slug}`
@@ -130,14 +149,23 @@ alert("Upload realizado!");
     }
 
     const { error } = await supabase
-      .from("empresas")
-      .update({
-        hora_abertura: horaAbertura,
-        hora_fechamento: horaFechamento,
-        intervalo,
-        dias_semana: diasSemana,
-      })
-      .eq("id", empresa.id);
+  .from("empresas")
+  .update({
+    nome: nomeEmpresa,
+    telefone: whatsapp,
+
+    descricao,
+    instagram,
+
+    mostrar_whatsapp: mostrarWhatsapp,
+    mostrar_instagram: mostrarInstagram,
+
+    hora_abertura: horaAbertura,
+    hora_fechamento: horaFechamento,
+    intervalo,
+    dias_semana: diasSemana,
+  })
+  .eq("id", empresa.id);
 
     if (error) {
       alert(error.message);
