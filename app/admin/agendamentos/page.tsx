@@ -17,11 +17,11 @@ interface Agendamento {
   servicos: {
     nome: string;
     preco: number;
-  } | null;
+  }[];
 
   profissionais: {
     nome: string;
-  } | null;
+  }[];
 }
 
 export default function AgendamentosPage() {
@@ -55,8 +55,8 @@ export default function AgendamentosPage() {
       .order("horario", { ascending: false });
 
     if (!error && data) {
-      setAgendamentos(data as Agendamento[]);
-    }
+  setAgendamentos(data as unknown as Agendamento[]);
+}
 
     setLoading(false);
   }
@@ -189,11 +189,11 @@ export default function AgendamentosPage() {
                     </td>
 
                     <td className="p-4">
-                      {agendamento.servicos?.nome ?? "-"}
+                      {agendamento.servicos?.[0]?.nome ?? "-"}
                     </td>
 
                     <td className="p-4">
-                      {agendamento.profissionais?.nome ?? "-"}
+                      {agendamento.profissionais?.[0]?.nome ?? "-"}
                     </td>
 
                     <td className="p-4">
@@ -207,9 +207,9 @@ export default function AgendamentosPage() {
                     </td>
 
                     <td className="p-4">
-                      {agendamento.servicos
-                        ? `R$ ${agendamento.servicos.preco.toFixed(2)}`
-                        : "-"}
+                      agendamento.servicos?.[0]
+  ? `R$ ${agendamento.servicos[0].preco.toFixed(2)}`
+  : "-"
                     </td>
 
                     <td className="p-4">
