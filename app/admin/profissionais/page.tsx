@@ -15,8 +15,12 @@ interface Profissional {
 }
 
 export default function ProfissionaisAdminPage() {
-  const [nome, setNome] = useState("");
   const [profissionais, setProfissionais] = useState<Profissional[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const [nome, setNome] = useState("");
+
+  const [editandoId, setEditandoId] = useState<string | null>(null);
 
   useEffect(() => {
     carregarProfissionais();
@@ -25,7 +29,10 @@ export default function ProfissionaisAdminPage() {
   async function carregarProfissionais() {
     const empresa = await empresaAtual();
 
-    if (!empresa) return;
+    if (!empresa) {
+      setLoading(false);
+      return;
+    }
 
     const { data, error } = await supabase
       .from("profissionais")
@@ -34,14 +41,32 @@ export default function ProfissionaisAdminPage() {
       .order("nome");
 
     if (error) {
-      console.error(error);
+      alert(error.message);
+      setLoading(false);
       return;
     }
 
     setProfissionais(data ?? []);
+    setLoading(false);
+  }
+
+  function editarProfissional(profissional: Profissional) {
+    setEditandoId(profissional.id);
+
+    setNome(profissional.nome);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   }
 
   async function salvarProfissional() {
+    if (!nome) {
+      alert("Informe o nome do profissional.");
+      return;
+    }
+
     const empresa = await empresaAtual();
 
     if (!empresa) {
@@ -49,12 +74,27 @@ export default function ProfissionaisAdminPage() {
       return;
     }
 
-    const { error } = await supabase
-      .from("profissionais")
-      .insert({
-        empresa_id: empresa.id,
-        nome,
-      });
+    let error;
+
+    if (editandoId) {
+      const resposta = await supabase
+        .from("profissionais")
+        .update({
+          nome,
+        })
+        .eq("id", editandoId);
+
+      error = resposta.error;
+    } else {
+      const resposta = await supabase
+        .from("profissionais")
+        .insert({
+          empresa_id: empresa.id,
+          nome,
+        });
+
+      error = resposta.error;
+    }
 
     if (error) {
       alert(error.message);
@@ -62,25 +102,49 @@ export default function ProfissionaisAdminPage() {
     }
 
     setNome("");
+    setEditandoId(null);
 
     await carregarProfissionais();
 
-    alert("Profissional cadastrado com sucesso!");
+    alert(
+      editandoId
+        ? "Profissional atualizado com sucesso!"
+        : "Profissional cadastrado com sucesso!"
+    );
   }
 
-  return (
+  async function excluirProfissional(id: string) {
+    const confirmar = confirm(
+      "Deseja realmente excluir este profissional?"
+    );
+
+    if (!confirmar) return;
+
+    const { error } = await supabase
+      .from("profissionais")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    await carregarProfissionais();
+  }
+    return (
     <main className="min-h-screen bg-zinc-100 p-8">
-      <div className="max-w-xl mx-auto">
+      <div className="max-w-5xl mx-auto">
 
         <h1 className="text-3xl font-bold">
           Profissionais
         </h1>
 
         <p className="text-zinc-500 mt-2 mb-8">
-          Cadastre os profissionais do estabelecimento.
+          Cadastre e gerencie os profissionais do estabelecimento.
         </p>
 
-        <Card className="space-y-4">
+        <Card className="p-6 mb-8 space-y-4">
 
           <Input
             placeholder="Nome do profissional"
@@ -89,29 +153,78 @@ export default function ProfissionaisAdminPage() {
           />
 
           <Button
-            fullWidth
             onClick={salvarProfissional}
+            className="w-full"
           >
-            Salvar Profissional
+            {editandoId
+              ? "Atualizar Profissional"
+              : "Salvar Profissional"}
           </Button>
 
         </Card>
 
-        <div className="mt-8 space-y-4">
-          {profissionais.length === 0 ? (
-            <p className="text-center text-zinc-500">
-              Nenhum profissional cadastrado.
-            </p>
-          ) : (
-            profissionais.map((profissional) => (
-              <Card key={profissional.id}>
-                <h2 className="font-semibold text-lg">
-                  {profissional.nome}
-                </h2>
+        {loading ? (
+
+          <Card className="p-6 text-center">
+            Carregando...
+          </Card>
+
+        ) : profissionais.length === 0 ? (
+
+          <Card className="p-6 text-center text-zinc-500">
+            Nenhum profissional cadastrado.
+          </Card>
+
+        ) : (
+
+          <div className="space-y-4">
+
+            {profissionais.map((profissional) => (
+
+              <Card
+                key={profissional.id}
+                className="p-5"
+              >
+
+                <div className="flex items-center justify-between">
+
+                  <div>
+
+                    <h2 className="font-semibold text-lg">
+                      {profissional.nome}
+                    </h2>
+
+                  </div>
+
+                  <div className="flex items-center gap-4">
+
+                    <button
+                      onClick={() => editarProfissional(profissional)}
+                      className="text-xl hover:scale-110 transition"
+                      title="Editar"
+                    >
+                      ✏️
+                    </button>
+
+                    <button
+                      onClick={() => excluirProfissional(profissional.id)}
+                      className="text-xl hover:scale-110 transition"
+                      title="Excluir"
+                    >
+                      🗑️
+                    </button>
+
+                  </div>
+
+                </div>
+
               </Card>
-            ))
-          )}
-        </div>
+
+            ))}
+
+          </div>
+
+        )}
 
       </div>
     </main>
