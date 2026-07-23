@@ -85,9 +85,10 @@ export default function ConfiguracoesPage() {
         });
 
     if (uploadError) {
-      alert(uploadError.message);
-      return;
-    }
+  console.error(uploadError);
+  alert(uploadError.message);
+  return;
+}
 
     const { data } = supabase.storage
       .from("logos")
@@ -103,9 +104,10 @@ export default function ConfiguracoesPage() {
       .eq("id", empresa.id);
 
     if (error) {
-      alert(error.message);
-      return;
-    }
+  console.error(error);
+  alert(error.message);
+  return;
+}
 
     setLogoPreview(url);
 
