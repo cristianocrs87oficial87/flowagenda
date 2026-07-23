@@ -85,11 +85,11 @@ export default function ConfiguracoesPage() {
         });
 
     if (uploadError) {
+  console.log("UPLOAD ERROR");
   console.error(uploadError);
   alert(uploadError.message);
   return;
 }
-
     const { data } = supabase.storage
       .from("logos")
       .getPublicUrl(nomeArquivo);
@@ -104,14 +104,31 @@ export default function ConfiguracoesPage() {
       .eq("id", empresa.id);
 
     if (error) {
+  console.log("UPDATE ERROR");
   console.error(error);
   alert(error.message);
   return;
 }
+/*
+const { error } = await supabase
+  .from("empresas")
+  .update({
+    logo_url: url,
+  })
+  .eq("id", empresa.id);
+
+if (error) {
+  console.log("UPDATE ERROR");
+  console.error(error);
+  alert(error.message);
+  return;
+}
+*/
 
     setLogoPreview(url);
 
-    alert("Logo atualizado com sucesso!");
+alert("Upload realizado!");
+  
   } finally {
     setEnviandoLogo(false);
   }
