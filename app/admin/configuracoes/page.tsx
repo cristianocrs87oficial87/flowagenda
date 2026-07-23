@@ -83,6 +83,7 @@ export default function ConfiguracoesPage() {
         .upload(nomeArquivo, arquivo, {
           upsert: true,
         });
+        console.log("UPLOAD RESULT", uploadError);
 
     if (uploadError) {
   console.log("UPLOAD ERROR");
@@ -93,6 +94,7 @@ export default function ConfiguracoesPage() {
     const { data } = supabase.storage
       .from("logos")
       .getPublicUrl(nomeArquivo);
+      console.log("PUBLIC URL", data);
 
     const url = data.publicUrl;
 
@@ -109,21 +111,6 @@ export default function ConfiguracoesPage() {
   alert(error.message);
   return;
 }
-/*
-const { error } = await supabase
-  .from("empresas")
-  .update({
-    logo_url: url,
-  })
-  .eq("id", empresa.id);
-
-if (error) {
-  console.log("UPDATE ERROR");
-  console.error(error);
-  alert(error.message);
-  return;
-}
-*/
 
     setLogoPreview(url);
 
