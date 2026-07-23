@@ -14,6 +14,7 @@ type Empresa = {
   id: string;
   nome: string;
   slug: string;
+  logo_url: string | null;
 };
 
 export default function EmpresaPage() {
@@ -60,7 +61,15 @@ export default function EmpresaPage() {
   return (
     <main className="min-h-screen bg-zinc-100 flex items-center justify-center p-6">
       <Card className="w-full max-w-md text-center">
-        <div className="w-24 h-24 rounded-full bg-zinc-200 mx-auto mb-6" />
+        {empresa.logo_url ? (
+  <img
+    src={empresa.logo_url}
+    alt={empresa.nome}
+    className="w-24 h-24 rounded-full object-cover mx-auto mb-6 border border-zinc-200"
+  />
+) : (
+  <div className="w-24 h-24 rounded-full bg-zinc-200 mx-auto mb-6" />
+)}
 
         <h1 className="text-3xl font-bold">
           {empresa.nome}
