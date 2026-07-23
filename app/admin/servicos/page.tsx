@@ -24,7 +24,13 @@ export default function ServicosAdminPage() {
   const [duracao, setDuracao] = useState("");
   const [preco, setPreco] = useState("");
 
-  const carregarServicos = async () => {
+  const [editandoId, setEditandoId] = useState<string | null>(null);
+
+  useEffect(() => {
+    carregarServicos();
+  }, []);
+
+  async function carregarServicos() {
     const empresa = await empresaAtual();
 
     if (!empresa) {
@@ -32,21 +38,36 @@ export default function ServicosAdminPage() {
       return;
     }
 
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("servicos")
       .select("*")
       .eq("empresa_id", empresa.id)
       .order("nome");
 
-    setServicos(data || []);
+    if (error) {
+      alert(error.message);
+      setLoading(false);
+      return;
+    }
+
+    setServicos(data ?? []);
     setLoading(false);
-  };
+  }
 
-  useEffect(() => {
-    carregarServicos();
-  }, []);
+  function editarServico(servico: Servico) {
+    setEditandoId(servico.id);
 
-  const salvarServico = async () => {
+    setNome(servico.nome);
+    setDuracao(String(servico.duracao));
+    setPreco(String(servico.preco));
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
+  async function salvarServico() {
     if (!nome || !duracao || !preco) {
       alert("Preencha todos os campos.");
       return;
@@ -56,12 +77,31 @@ export default function ServicosAdminPage() {
 
     if (!empresa) return;
 
-    const { error } = await supabase.from("servicos").insert({
-      empresa_id: empresa.id,
-      nome,
-      duracao: Number(duracao),
-      preco: Number(preco),
-    });
+    let error;
+
+    if (editandoId) {
+      const resposta = await supabase
+        .from("servicos")
+        .update({
+          nome,
+          duracao: Number(duracao),
+          preco: Number(preco),
+        })
+        .eq("id", editandoId);
+
+      error = resposta.error;
+    } else {
+      const resposta = await supabase
+        .from("servicos")
+        .insert({
+          empresa_id: empresa.id,
+          nome,
+          duracao: Number(duracao),
+          preco: Number(preco),
+        });
+
+      error = resposta.error;
+    }
 
     if (error) {
       alert(error.message);
@@ -71,22 +111,36 @@ export default function ServicosAdminPage() {
     setNome("");
     setDuracao("");
     setPreco("");
+    setEditandoId(null);
 
-    carregarServicos();
-  };
+    await carregarServicos();
 
-  const excluirServico = async (id: string) => {
-    const confirmar = confirm("Deseja realmente excluir este serviço?");
+    alert(
+      editandoId
+        ? "Serviço atualizado com sucesso!"
+        : "Serviço cadastrado com sucesso!"
+    );
+  }
+
+  async function excluirServico(id: string) {
+    const confirmar = confirm(
+      "Deseja realmente excluir este serviço?"
+    );
 
     if (!confirmar) return;
 
-    await supabase
+    const { error } = await supabase
       .from("servicos")
       .delete()
       .eq("id", id);
 
-    carregarServicos();
-  };
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    await carregarServicos();
+  }
     return (
     <main className="min-h-screen bg-zinc-100 p-8">
       <div className="max-w-5xl mx-auto">
@@ -126,51 +180,84 @@ export default function ServicosAdminPage() {
             onClick={salvarServico}
             className="w-full"
           >
-            Salvar Serviço
+            {editandoId ? "Atualizar Serviço" : "Salvar Serviço"}
           </Button>
 
         </Card>
 
         {loading ? (
+
           <Card className="p-6 text-center">
             Carregando...
           </Card>
+
         ) : servicos.length === 0 ? (
+
           <Card className="p-6 text-center text-zinc-500">
             Nenhum serviço cadastrado.
           </Card>
+
         ) : (
+
           <div className="space-y-4">
 
             {servicos.map((servico) => (
+
               <Card
                 key={servico.id}
-                className="p-5 flex items-center justify-between"
+                className="p-5"
               >
-                <div>
-                  <h2 className="font-semibold text-lg">
-                    {servico.nome}
-                  </h2>
 
-                  <p className="text-zinc-500">
-                    {servico.duracao} min
-                  </p>
+                <div className="flex items-start justify-between">
 
-                  <p className="font-bold text-pink-600">
-                    R$ {Number(servico.preco).toFixed(2)}
-                  </p>
+                  <div>
+
+                    <h2 className="font-semibold text-lg">
+                      {servico.nome}
+                    </h2>
+
+                    <p className="text-sm text-zinc-500 mt-1">
+                      {servico.duracao} min
+                    </p>
+
+                  </div>
+
+                  <div className="text-right">
+
+                    <p className="font-bold text-pink-600 text-lg">
+                      R$ {Number(servico.preco).toFixed(2)}
+                    </p>
+
+                    <div className="flex justify-end gap-4 mt-3">
+
+                      <button
+                        onClick={() => editarServico(servico)}
+                        className="text-xl hover:scale-110 transition"
+                        title="Editar"
+                      >
+                        ✏️
+                      </button>
+
+                      <button
+                        onClick={() => excluirServico(servico.id)}
+                        className="text-xl hover:scale-110 transition"
+                        title="Excluir"
+                      >
+                        🗑️
+                      </button>
+
+                    </div>
+
+                  </div>
+
                 </div>
 
-                <Button
-  variant="danger"
-  onClick={() => excluirServico(servico.id)}
->
-  Excluir
-</Button>
               </Card>
+
             ))}
 
           </div>
+
         )}
 
       </div>
