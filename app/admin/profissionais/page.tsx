@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/Input";
 interface Profissional {
   id: string;
   nome: string;
+  foto: string | null;
 }
 
 export default function ProfissionaisAdminPage() {
@@ -19,6 +20,8 @@ export default function ProfissionaisAdminPage() {
   const [loading, setLoading] = useState(true);
 
   const [nome, setNome] = useState("");
+  const [foto, setFoto] = useState<File | null>(null);
+const [preview, setPreview] = useState("");
 
   const [editandoId, setEditandoId] = useState<string | null>(null);
 
@@ -51,16 +54,40 @@ export default function ProfissionaisAdminPage() {
   }
 
   function editarProfissional(profissional: Profissional) {
-    setEditandoId(profissional.id);
+  setEditandoId(profissional.id);
 
-    setNome(profissional.nome);
+  setNome(profissional.nome);
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+  setPreview(profissional.foto ?? "");
+  setFoto(null);
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+}
+async function uploadFoto() {
+  if (!foto) return preview;
+
+  const extensao = foto.name.split(".").pop();
+
+  const nomeArquivo = `${Date.now()}.${extensao}`;
+
+  const { error } = await supabase.storage
+    .from("profissionais")
+    .upload(nomeArquivo, foto);
+
+  if (error) {
+    alert(error.message);
+    return null;
   }
 
+  const { data } = supabase.storage
+    .from("profissionais")
+    .getPublicUrl(nomeArquivo);
+
+  return data.publicUrl;
+}
   async function salvarProfissional() {
     if (!nome) {
       alert("Informe o nome do profissional.");
@@ -68,6 +95,9 @@ export default function ProfissionaisAdminPage() {
     }
 
     const empresa = await empresaAtual();
+    const fotoUrl = await uploadFoto();
+
+if (foto && !fotoUrl) return;
 
     if (!empresa) {
       alert("Empresa não encontrada.");
@@ -80,8 +110,9 @@ export default function ProfissionaisAdminPage() {
       const resposta = await supabase
         .from("profissionais")
         .update({
-          nome,
-        })
+  nome,
+  foto: fotoUrl,
+})
         .eq("id", editandoId);
 
       error = resposta.error;
@@ -89,9 +120,10 @@ export default function ProfissionaisAdminPage() {
       const resposta = await supabase
         .from("profissionais")
         .insert({
-          empresa_id: empresa.id,
-          nome,
-        });
+  empresa_id: empresa.id,
+  nome,
+  foto: fotoUrl,
+})
 
       error = resposta.error;
     }
@@ -102,7 +134,9 @@ export default function ProfissionaisAdminPage() {
     }
 
     setNome("");
-    setEditandoId(null);
+setFoto(null);
+setPreview("");
+setEditandoId(null);
 
     await carregarProfissionais();
 
@@ -145,12 +179,32 @@ export default function ProfissionaisAdminPage() {
         </p>
 
         <Card className="p-6 mb-8 space-y-4">
+<Input
+  placeholder="Nome do profissional"
+  value={nome}
+  onChange={(e) => setNome(e.target.value)}
+/>
+{preview && (
+  <div className="flex justify-center">
+    <img
+      src={preview}
+      alt="Foto do profissional"
+    className="h-28 w-28 rounded-full object-cover border-4 border-violet-200 shadow-md"
+    />
+  </div>
+)}
+          <input
+  type="file"
+  accept="image/*"
+  onChange={(e) => {
+    const arquivo = e.target.files?.[0];
 
-          <Input
-            placeholder="Nome do profissional"
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-          />
+    if (!arquivo) return;
+
+    setFoto(arquivo);
+    setPreview(URL.createObjectURL(arquivo));
+  }}
+/>
 
           <Button
             onClick={salvarProfissional}
@@ -190,9 +244,16 @@ export default function ProfissionaisAdminPage() {
 
                   <div>
 
-                    <h2 className="font-semibold text-lg">
-                      {profissional.nome}
-                    </h2>
+                    <div className="flex items-center gap-4">
+                        <img
+  src={profissional.foto || "/avatar.png"}
+  alt={profissional.nome}
+  className="h-14 w-14 rounded-full object-cover bg-zinc-200"
+/>
+  <h2 className="font-semibold text-lg">
+    {profissional.nome}
+  </h2>
+</div>
 
                   </div>
 
