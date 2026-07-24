@@ -21,6 +21,7 @@ export default function DashboardPage() {
   const [temProfissionais, setTemProfissionais] = useState(false);
   const [agendaHoje, setAgendaHoje] = useState<any[]>([]);
   const [totalHoje, setTotalHoje] = useState(0);
+  const [receitaHoje, setReceitaHoje] = useState(0);
   async function carregarAgendaHoje() {
   const empresa = await empresaAtual();
 
@@ -32,13 +33,16 @@ export default function DashboardPage() {
   const { data, error } = await supabase
     .from("agendamentos")
     .select(`
-      id,
-      cliente_nome,
-      horario,
-      status,
-      servicos(nome),
-      profissionais(nome)
-    `)
+  id,
+  cliente_nome,
+  horario,
+  status,
+  servicos(
+    nome,
+    preco
+  ),
+  profissionais(nome)
+`)
     .eq("empresa_id", empresa.id)
     .eq("data", hoje)
     .order("horario");
@@ -47,9 +51,22 @@ export default function DashboardPage() {
     console.error(error);
     return;
   }
-console.log("AGENDA HOJE:", data);
+console.log(JSON.stringify(data, null, 2));
+console.log("RECEITA:", data);
   setAgendaHoje(data ?? []);
   setTotalHoje(data?.length ?? 0);
+  const total = (data ?? []).reduce((soma: number, item: any) => {
+  const servico = Array.isArray(item.servicos)
+    ? item.servicos[0]
+    : item.servicos;
+
+  return soma + Number(servico?.preco ?? 0);
+}, 0);
+
+console.log("TOTAL RECEITA:", total);
+
+setReceitaHoje(total);
+setReceitaHoje(total);
 }
 
   useEffect(() => {
@@ -235,7 +252,17 @@ console.log("AGENDA HOJE:", data);
       {totalHoje}
     </h2>
   </Card>
+<Card>
 
+  <p className="text-sm text-zinc-500">
+    💰 Receita Hoje
+  </p>
+
+  <h2 className="mt-3 text-4xl font-bold text-green-600">
+    R$ {Number(receitaHoje).toFixed(2)}
+  </h2>
+
+</Card>
 </div>
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
 
