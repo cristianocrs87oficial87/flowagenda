@@ -15,13 +15,13 @@ interface Agendamento {
   status: string;
 
   servicos: {
-    nome: string;
-    preco: number;
-  }[];
+  nome: string;
+  preco: number;
+};
 
-  profissionais: {
-    nome: string;
-  }[];
+profissionais: {
+  nome: string;
+};
 }
 
 export default function AgendamentosPage() {
@@ -60,15 +60,14 @@ export default function AgendamentosPage() {
     .eq("empresa_id", empresa.id)
     .order("data", { ascending: false })
     .order("horario", { ascending: false });
-    console.log("DATA:", data);
-console.log("ERROR:", error);
+    console.log(JSON.stringify(data, null, 2));
 
   if (error) {
     console.error(error);
   }
 
   if (data) {
-    setAgendamentos(data as Agendamento[]);
+    setAgendamentos(data as unknown as Agendamento[]);
   }
 
   setLoading(false);
@@ -206,11 +205,11 @@ console.log("ERROR:", error);
                     </td>
 
                     <td className="p-4">
-                      {agendamento.servicos?.[0]?.nome ?? "-"}
+                      {agendamento.servicos?.nome ?? "-"}
                     </td>
 
                     <td className="p-4">
-                      {agendamento.profissionais?.[0]?.nome ?? "-"}
+                      {agendamento.profissionais?.nome ?? "-"}
                     </td>
 
                     <td className="p-4">
@@ -224,8 +223,8 @@ console.log("ERROR:", error);
                     </td>
 
                     <td className="p-4">
-                      {agendamento.servicos?.[0]?.preco != null
-  ? `R$ ${Number(agendamento.servicos[0].preco).toFixed(2)}`
+                      {agendamento.servicos?.preco != null
+  ? `R$ ${Number(agendamento.servicos.preco).toFixed(2)}`
   : "-"
 }
                     </td>
