@@ -59,8 +59,8 @@ export default function AgendamentosPage() {
   )
 `)
     .eq("empresa_id", empresa.id)
-    .order("data", { ascending: false })
-    .order("horario", { ascending: false });
+    .order("data", { ascending: true })
+.order("horario", { ascending: true });
     console.log(JSON.stringify(data, null, 2));
 
   if (error) {
