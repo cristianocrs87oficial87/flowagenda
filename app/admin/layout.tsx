@@ -63,6 +63,7 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+    console.log("===== LAYOUT NOVO =====");
   const pathname = usePathname();
   const router = useRouter();
 
@@ -116,9 +117,15 @@ export default function AdminLayout({
       {/* MOBILE MENU */}
 
       {menuOpen && (
-        <div className="fixed inset-0 z-50 bg-black/40 lg:hidden">
+        <div
+  className="fixed inset-0 z-50 bg-black/40 lg:hidden"
+  onClick={() => setMenuOpen(false)}
+>
 
-          <div className="h-full w-72 bg-white shadow-xl">
+          <div
+  className="h-full w-72 bg-white shadow-xl"
+  onClick={(e) => e.stopPropagation()}
+>
 
             <div className="flex items-center justify-between border-b p-5">
 
@@ -306,43 +313,9 @@ export default function AdminLayout({
 
           {/* PAGE */}
 
-          <section className="flex-1 px-5 pt-8 pb-24 lg:p-8">
+          <section className="flex-1 px-5 pt-8 pb-8 lg:p-8">
             {children}
           </section>
-
-          {/* BOTTOM NAVIGATION MOBILE */}
-
-          <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-white lg:hidden">
-
-            <div className="grid grid-cols-5">
-
-              {menu.map((item) => {
-                const Icon = item.icon;
-
-                const active =
-                  pathname === item.href ||
-                  pathname.startsWith(item.href + "/");
-
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`flex flex-col items-center justify-center gap-1 py-3 text-[11px] transition ${
-                      active
-                        ? "text-violet-600"
-                        : "text-zinc-500"
-                    }`}
-                  >
-                    <Icon className="h-5 w-5" />
-
-                    <span>{item.name}</span>
-                  </Link>
-                );
-              })}
-
-            </div>
-
-          </nav>
 
         </main>
 
