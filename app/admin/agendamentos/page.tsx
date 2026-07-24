@@ -183,7 +183,7 @@ return (
           </p>
 
           <p className="text-sm">
-            📅 {new Date(`${agendamento.data}T00:00:00`).toLocaleDateString("pt-BR")}
+             {new Date(`${agendamento.data}T00:00:00`).toLocaleDateString("pt-BR")}
           </p>
 
           <p className="text-sm">

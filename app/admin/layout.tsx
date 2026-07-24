@@ -15,7 +15,6 @@ import {
   LogOut,
   Menu,
   X,
-  Bell,
   ChevronDown,
 } from "lucide-react";
 
@@ -280,12 +279,6 @@ export default function AdminLayout({
             </div>
 
             <div className="flex items-center gap-4">
-
-              <button className="relative rounded-xl p-2 hover:bg-zinc-100">
-                <Bell className="h-5 w-5 text-zinc-600" />
-
-                <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500" />
-              </button>
 
               <div className="hidden items-center gap-3 rounded-xl border px-3 py-2 md:flex">
 
