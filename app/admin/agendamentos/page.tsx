@@ -27,6 +27,7 @@ profissionais: {
 export default function AgendamentosPage() {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mobile, setMobile] = useState(false);
 
   async function carregarAgendamentos() {
   setLoading(true);
@@ -99,10 +100,24 @@ export default function AgendamentosPage() {
   }
 
   useEffect(() => {
-    carregarAgendamentos();
-  }, []);
+  carregarAgendamentos();
+}, []);
 
-  return (
+useEffect(() => {
+  const verificarTela = () => {
+    setMobile(window.innerWidth < 768);
+  };
+
+  verificarTela();
+
+  window.addEventListener("resize", verificarTela);
+
+  return () => {
+    window.removeEventListener("resize", verificarTela);
+  };
+}, []);
+
+return (
     <main className="min-h-screen bg-zinc-100 p-8">
       <div className="max-w-7xl mx-auto">
 
@@ -141,9 +156,19 @@ export default function AgendamentosPage() {
               Nenhum agendamento encontrado.
             </div>
 
-          ) : (
+          ) : mobile ? (
 
-            <table className="w-full">
+<div className="space-y-4 p-4">
+
+  
+
+</div>
+
+) : (
+
+<div className="overflow-x-auto">
+
+  <table className="w-full">
 
               <thead className="bg-zinc-100">
 
@@ -258,61 +283,84 @@ export default function AgendamentosPage() {
                       </span>
                     </td>
 
-                    <td className="p-4">
-                      <div className="flex flex-wrap justify-center gap-2">
+                    
+                      <td className="p-4">
+  <div className="flex flex-wrap justify-center gap-2">
 
-                        <button
-                          onClick={() =>
-                            alterarStatus(
-                              agendamento.id,
-                              "Confirmado"
-                            )
-                          }
-                          className="px-3 py-1 rounded-lg bg-yellow-500 text-white text-sm hover:bg-yellow-600 transition"
-                        >
-                          Confirmar
-                        </button>
+    {agendamento.status === "Agendado" && (
+      <>
+        <button
+          onClick={() =>
+            alterarStatus(agendamento.id, "Confirmado")
+          }
+          className="px-3 py-1 rounded-lg bg-yellow-500 text-white text-sm"
+        >
+          Confirmar
+        </button>
 
-                        <button
-                          onClick={() =>
-                            alterarStatus(
-                              agendamento.id,
-                              "Finalizado"
-                            )
-                          }
-                          className="px-3 py-1 rounded-lg bg-green-600 text-white text-sm hover:bg-green-700 transition"
-                        >
-                          Finalizar
-                        </button>
+        <button
+          onClick={() =>
+            alterarStatus(agendamento.id, "Cancelado")
+          }
+          className="px-3 py-1 rounded-lg bg-red-500 text-white text-sm"
+        >
+          Cancelar
+        </button>
+      </>
+    )}
 
-                        <button
-                          onClick={() =>
-                            alterarStatus(
-                              agendamento.id,
-                              "Cancelado"
-                            )
-                          }
-                          className="px-3 py-1 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600 transition"
-                        >
-                          Cancelar
-                        </button>
+    {agendamento.status === "Confirmado" && (
+      <>
+        <button
+          onClick={() =>
+            alterarStatus(agendamento.id, "Finalizado")
+          }
+          className="px-3 py-1 rounded-lg bg-green-600 text-white text-sm"
+        >
+          Finalizar
+        </button>
 
-                        <button
-                          onClick={() =>
-                            excluirAgendamento(agendamento.id)
-                          }
-                          className="px-3 py-1 rounded-lg bg-zinc-800 text-white text-sm hover:bg-black transition"
-                        >
-                          Excluir
-                        </button>
+        <button
+          onClick={() =>
+            alterarStatus(agendamento.id, "Cancelado")
+          }
+          className="px-3 py-1 rounded-lg bg-red-500 text-white text-sm"
+        >
+          Cancelar
+        </button>
+      </>
+    )}
 
-                      </div>
-                    </td>
+    {agendamento.status === "Finalizado" && (
+      <span className="px-3 py-1 rounded-lg bg-green-100 text-green-700 text-sm font-semibold">
+        ✅ Finalizado
+      </span>
+    )}
+
+    {agendamento.status === "Cancelado" && (
+      <span className="px-3 py-1 rounded-lg bg-red-100 text-red-700 text-sm font-semibold">
+        ❌ Cancelado
+      </span>
+    )}
+
+    <button
+      onClick={() =>
+        excluirAgendamento(agendamento.id)
+      }
+      className="px-3 py-1 rounded-lg bg-zinc-800 text-white text-sm"
+    >
+      Excluir
+    </button>
+
+  </div>
+</td>
+  
                   </tr>
   );
 })}
               </tbody>
             </table>
+            </div>
 
           )}
 
