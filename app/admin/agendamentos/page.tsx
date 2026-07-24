@@ -157,10 +157,91 @@ return (
             </div>
 
           ) : mobile ? (
-
 <div className="space-y-4 p-4">
 
-  
+  {agendamentos.map((agendamento) => (
+
+    <div
+      key={agendamento.id}
+      className="rounded-2xl border bg-white p-4 shadow-sm"
+    >
+
+      <div className="flex justify-between items-start">
+
+        <div>
+
+          <p className="font-bold text-lg">
+            {agendamento.cliente_nome}
+          </p>
+
+          <p className="text-sm text-zinc-500">
+            {agendamento.servicos?.nome}
+          </p>
+
+          <p className="text-sm text-zinc-500">
+            {agendamento.profissionais?.nome}
+          </p>
+
+          <p className="text-sm">
+            📅 {new Date(`${agendamento.data}T00:00:00`).toLocaleDateString("pt-BR")}
+          </p>
+
+          <p className="text-sm">
+            🕒 {agendamento.horario}
+          </p>
+
+          <p className="font-bold text-green-600 mt-2">
+            R$ {Number(agendamento.servicos?.preco ?? 0).toFixed(2)}
+          </p>
+
+        </div>
+
+        <span className="rounded-full bg-violet-100 px-3 py-1 text-xs text-violet-700">
+          {agendamento.status}
+        </span>
+
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 mt-4">
+
+        <a
+          href={`https://wa.me/55${agendamento.cliente_whatsapp}`}
+          target="_blank"
+          className="rounded-lg bg-green-600 py-2 text-center text-white"
+        >
+          WhatsApp
+        </a>
+
+        {agendamento.status === "Agendado" && (
+          <button
+            onClick={() => alterarStatus(agendamento.id, "Confirmado")}
+            className="rounded-lg bg-yellow-500 py-2 text-white"
+          >
+            Confirmar
+          </button>
+        )}
+
+        {agendamento.status === "Confirmado" && (
+          <button
+            onClick={() => alterarStatus(agendamento.id, "Finalizado")}
+            className="rounded-lg bg-green-600 py-2 text-white"
+          >
+            Finalizar
+          </button>
+        )}
+
+        <button
+          onClick={() => excluirAgendamento(agendamento.id)}
+          className="rounded-lg bg-red-500 py-2 text-white col-span-2"
+        >
+          Excluir
+        </button>
+
+      </div>
+
+    </div>
+
+  ))}
 
 </div>
 
