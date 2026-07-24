@@ -146,14 +146,48 @@ useEffect(() => {
         {agendaHoje.map((item: any) => (
 
           <div
-            key={item.id}
-            className="flex items-center justify-between rounded-xl border p-4"
-          >
+  key={item.id}
+  className="rounded-2xl border bg-white p-4"
+>
+  <div className="flex items-start justify-between">
+
+    <div>
+
+      <p className="text-lg font-bold text-zinc-900">
+        {item.horario?.slice(0, 5)}
+      </p>
+
+      <p className="mt-1 font-semibold text-zinc-900">
+        {item.cliente_nome}
+      </p>
+
+      <p className="mt-1 text-sm text-zinc-500">
+        {item.servicos?.nome ?? "-"} • {item.profissionais?.nome ?? "-"}
+      </p>
+
+    </div>
+
+    <span
+      className={`rounded-full px-3 py-1 text-xs font-medium
+      ${
+        item.status === "Agendado"
+          ? "bg-yellow-100 text-yellow-700"
+          : item.status === "Confirmado"
+          ? "bg-blue-100 text-blue-700"
+          : item.status === "Finalizado"
+          ? "bg-green-100 text-green-700"
+          : "bg-red-100 text-red-700"
+      }`}
+    >
+      {item.status}
+    </span>
+
+  </div>
 
             <div>
 
               <p className="font-semibold">
-                {item.horario}
+                {item.horario?.slice(0, 5)}
               </p>
 
               <p className="text-lg">
@@ -183,16 +217,16 @@ useEffect(() => {
   </div>
 
 </Card>
-<div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+<div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
 
   <Card>
     <p className="text-sm text-zinc-500">
       📅 Agendamentos Hoje
     </p>
 
-    <h2 className="mt-3 text-4xl font-bold text-violet-600">
-      {totalHoje}
-    </h2>
+    <h2 className="mt-2 text-3xl font-bold text-violet-600">
+  {totalHoje}
+</h2>
   </Card>
 <Card>
 
@@ -200,12 +234,52 @@ useEffect(() => {
     💰 Receita Hoje
   </p>
 
-  <h2 className="mt-3 text-4xl font-bold text-green-600">
-    R$ {Number(receitaHoje).toFixed(2)}
-  </h2>
+  <h2 className="mt-2 text-3xl font-bold text-green-600">
+  R$ {Number(receitaHoje).toFixed(2)}
+</h2>
 
 </Card>
 </div>
+<Card>
+
+  <h2 className="text-xl font-semibold">
+    👤 Próximo Atendimento
+  </h2>
+
+  <div className="mt-5">
+
+    {agendaHoje.length > 0 ? (
+
+      <>
+        <p className="text-3xl font-bold text-violet-600">
+          {agendaHoje[0].horario?.slice(0, 5)}
+        </p>
+
+        <p className="mt-3 text-lg font-semibold">
+          {agendaHoje[0].cliente_nome}
+        </p>
+
+        <p className="mt-1 text-sm text-zinc-500">
+          {agendaHoje[0].servicos?.nome ?? "-"}
+        </p>
+
+        <p className="text-sm text-zinc-500">
+          {agendaHoje[0].profissionais?.nome ?? "-"}
+        </p>
+
+      </>
+
+    ) : (
+
+      <p className="text-zinc-500">
+        Nenhum atendimento para hoje.
+      </p>
+
+    )}
+
+  </div>
+
+</Card>
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
 
   {cards.map((card) => {
