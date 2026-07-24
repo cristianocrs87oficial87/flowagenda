@@ -33,6 +33,7 @@ export default function DadosPage() {
       setSalvando(false);
       return;
     }
+    
 
     const telefone = whatsapp.replace(/\D/g, "");
 
@@ -106,7 +107,23 @@ export default function DadosPage() {
       setSalvando(false);
       return;
     }
+// Salva o cliente caso ainda não exista
+const { data: clienteExistente } = await supabase
+  .from("clientes")
+  .select("id")
+  .eq("empresa_id", empresa.id)
+  .eq("whatsapp", telefone)
+  .maybeSingle();
 
+if (!clienteExistente) {
+  await supabase
+    .from("clientes")
+    .insert({
+      empresa_id: empresa.id,
+      nome: nomeLimpo,
+      whatsapp: telefone,
+    });
+}
     router.push(`/${booking.empresa}/sucesso`);
   }
 
