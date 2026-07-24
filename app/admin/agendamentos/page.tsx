@@ -187,7 +187,7 @@ return (
           </p>
 
           <p className="text-sm">
-            🕒 {agendamento.horario}
+            {agendamento.horario.slice(0, 5)}
           </p>
 
           <p className="font-bold text-green-600 mt-2">
@@ -325,7 +325,7 @@ return (
                     </td>
 
                     <td className="p-4">
-                      {agendamento.horario}
+                      {agendamento.horario.slice(0, 5)}
                     </td>
 
                     <td className="p-4">
