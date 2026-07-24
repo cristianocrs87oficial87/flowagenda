@@ -17,8 +17,6 @@ import { empresaAtual } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 
 export default function DashboardPage() {
-  const [temServicos, setTemServicos] = useState(false);
-  const [temProfissionais, setTemProfissionais] = useState(false);
   const [agendaHoje, setAgendaHoje] = useState<any[]>([]);
   const [totalHoje, setTotalHoje] = useState(0);
   const [receitaHoje, setReceitaHoje] = useState(0);
@@ -70,30 +68,9 @@ console.log("RECEITA:", data);
 setReceitaHoje(total);
 }
 
-  useEffect(() => {
-    async function carregarChecklist() {
-      const empresa = await empresaAtual();
-
-      if (!empresa) return;
-
-      const { count: totalServicos } = await supabase
-        .from("servicos")
-        .select("*", { count: "exact", head: true })
-        .eq("empresa_id", empresa.id);
-
-      setTemServicos((totalServicos ?? 0) > 0);
-
-      const { count: totalProfissionais } = await supabase
-        .from("profissionais")
-        .select("*", { count: "exact", head: true })
-        .eq("empresa_id", empresa.id);
-
-      setTemProfissionais((totalProfissionais ?? 0) > 0);
-    }
-
-    carregarChecklist();
-    carregarAgendaHoje();
-  }, []);
+useEffect(() => {
+  carregarAgendaHoje();
+}, []);
 
   const cards = [
     {
@@ -139,51 +116,15 @@ setReceitaHoje(total);
       <div>
 
         <h1 className="text-4xl font-bold tracking-tight text-zinc-900">
-          Dashboard
-        </h1>
+</h1>
 
-        <p className="mt-3 text-zinc-500">
-          Bem-vindo ao FlowAgenda.
-          Escolha uma opção para começar.
-        </p>
+<p className="mt-3 text-zinc-500">
+  Confira rapidamente como está sua agenda de hoje.
+</p>
 
       </div>
 
-      <Card>
-
-        <h2 className="text-2xl font-bold">
-          🚀 Próximos passos
-        </h2>
-
-        <div className="mt-6 space-y-4 text-zinc-600">
-
-          <p>
-            {temServicos
-              ? "✅ Serviços cadastrados."
-              : "⬜ Cadastre seus serviços."}
-          </p>
-
-          <p>
-            {temProfissionais
-              ? "✅ Profissionais cadastrados."
-              : "⬜ Cadastre seus profissionais."}
-          </p>
-
-          <p>
-            ⬜ Configure os horários da agenda.
-          </p>
-
-          <p>
-            ⬜ Compartilhe seu link de agendamento.
-          </p>
-
-          <p>
-            ⬜ Comece a receber clientes online.
-          </p>
-
-        </div>
-
-      </Card>
+    
       <Card>
 
   <h2 className="text-2xl font-bold">
