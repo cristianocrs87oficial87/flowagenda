@@ -1,37 +1,80 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
+
 import {
   CalendarDays,
   Users,
   BriefcaseBusiness,
+  UserRound,
   Settings,
   ArrowRight,
 } from "lucide-react";
 
 import { Card } from "@/components/ui/Card";
-import { useEffect, useState } from "react";
 import { empresaAtual } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 
 export default function DashboardPage() {
-    const [temServicos, setTemServicos] = useState(false);
-    useEffect(() => {
-  async function verificarServicos() {
-    const empresa = await empresaAtual();
+  const [temServicos, setTemServicos] = useState(false);
+  const [temProfissionais, setTemProfissionais] = useState(false);
+  const [agendaHoje, setAgendaHoje] = useState<any[]>([]);
+  async function carregarAgendaHoje() {
+  const empresa = await empresaAtual();
 
-    if (!empresa) return;
+  if (!empresa) return;
 
-    const { count } = await supabase
-      .from("servicos")
-      .select("*", { count: "exact", head: true })
-      .eq("empresa_id", empresa.id);
+  const hoje = new Date().toISOString().split("T")[0];
+  console.log("HOJE:", hoje);
 
-    setTemServicos((count ?? 0) > 0);
+  const { data, error } = await supabase
+    .from("agendamentos")
+    .select(`
+      id,
+      cliente_nome,
+      horario,
+      status,
+      servicos(nome),
+      profissionais(nome)
+    `)
+    .eq("empresa_id", empresa.id)
+    .eq("data", hoje)
+    .order("horario");
+
+  if (error) {
+    console.error(error);
+    return;
   }
+console.log("AGENDA HOJE:", data);
+  setAgendaHoje(data ?? []);
+}
 
-  verificarServicos();
-}, []);
+  useEffect(() => {
+    async function carregarChecklist() {
+      const empresa = await empresaAtual();
+
+      if (!empresa) return;
+
+      const { count: totalServicos } = await supabase
+        .from("servicos")
+        .select("*", { count: "exact", head: true })
+        .eq("empresa_id", empresa.id);
+
+      setTemServicos((totalServicos ?? 0) > 0);
+
+      const { count: totalProfissionais } = await supabase
+        .from("profissionais")
+        .select("*", { count: "exact", head: true })
+        .eq("empresa_id", empresa.id);
+
+      setTemProfissionais((totalProfissionais ?? 0) > 0);
+    }
+
+    carregarChecklist();
+    carregarAgendaHoje();
+  }, []);
+
   const cards = [
     {
       titulo: "Agendamentos",
@@ -39,6 +82,13 @@ export default function DashboardPage() {
       href: "/admin/agendamentos",
       icon: CalendarDays,
       cor: "bg-violet-100 text-violet-600",
+    },
+    {
+      titulo: "Profissionais",
+      descricao: "Cadastre sua equipe.",
+      href: "/admin/profissionais",
+      icon: UserRound,
+      cor: "bg-purple-100 text-purple-600",
     },
     {
       titulo: "Serviços",
@@ -88,24 +138,94 @@ export default function DashboardPage() {
         <div className="mt-6 space-y-4 text-zinc-600">
 
           <p>
-  {temServicos
-    ? "✅ Serviços cadastrados."
-    : "⬜ Cadastre seus serviços."}
-</p>
+            {temServicos
+              ? "✅ Serviços cadastrados."
+              : "⬜ Cadastre seus serviços."}
+          </p>
 
-          <p>✅ Configure os horários da agenda.</p>
+          <p>
+            {temProfissionais
+              ? "✅ Profissionais cadastrados."
+              : "⬜ Cadastre seus profissionais."}
+          </p>
 
-          <p>✅ Compartilhe seu link de agendamento.</p>
+          <p>
+            ⬜ Configure os horários da agenda.
+          </p>
 
-          <p>✅ Comece a receber clientes online.</p>
+          <p>
+            ⬜ Compartilhe seu link de agendamento.
+          </p>
+
+          <p>
+            ⬜ Comece a receber clientes online.
+          </p>
 
         </div>
 
       </Card>
+      <Card>
+
+  <h2 className="text-2xl font-bold">
+    📅 Agenda de Hoje
+  </h2>
+
+  <div className="mt-6">
+
+    {agendaHoje.length === 0 ? (
+
+      <p className="text-zinc-500">
+        Nenhum agendamento para hoje.
+      </p>
+
+    ) : (
+
+      <div className="space-y-4">
+
+        {agendaHoje.map((item: any) => (
+
+          <div
+            key={item.id}
+            className="flex items-center justify-between rounded-xl border p-4"
+          >
+
+            <div>
+
+              <p className="font-semibold">
+                {item.horario}
+              </p>
+
+              <p className="text-lg">
+                {item.cliente_nome}
+              </p>
+
+              <p className="text-sm text-zinc-500">
+                {item.servicos?.nome ?? "-"} • {item.profissionais?.nome ?? "-"}
+              </p>
+
+            </div>
+
+            <span
+              className="rounded-full bg-violet-100 px-3 py-1 text-sm text-violet-700"
+            >
+              {item.status}
+            </span>
+
+          </div>
+
+        ))}
+
+      </div>
+
+    )}
+
+  </div>
+
+</Card>
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
 
-        {cards.map((card) => {
+  {cards.map((card) => {
           const Icon = card.icon;
 
           return (
@@ -141,7 +261,6 @@ export default function DashboardPage() {
         })}
 
       </div>
-
 
     </main>
   );
