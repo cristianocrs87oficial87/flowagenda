@@ -56,6 +56,10 @@ console.log("RECEITA:", data);
   setAgendaHoje(data ?? []);
   setTotalHoje(data?.length ?? 0);
   const total = (data ?? []).reduce((soma: number, item: any) => {
+  if (item.status !== "Finalizado") {
+    return soma;
+  }
+
   const servico = Array.isArray(item.servicos)
     ? item.servicos[0]
     : item.servicos;
@@ -63,9 +67,6 @@ console.log("RECEITA:", data);
   return soma + Number(servico?.preco ?? 0);
 }, 0);
 
-console.log("TOTAL RECEITA:", total);
-
-setReceitaHoje(total);
 setReceitaHoje(total);
 }
 
