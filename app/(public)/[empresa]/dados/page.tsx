@@ -116,13 +116,18 @@ const { data: clienteExistente } = await supabase
   .maybeSingle();
 
 if (!clienteExistente) {
-  await supabase
+  const { error: erroCliente } = await supabase
     .from("clientes")
     .insert({
       empresa_id: empresa.id,
       nome: nomeLimpo,
       whatsapp: telefone,
     });
+
+  if (erroCliente) {
+    console.log("ERRO CLIENTE:", erroCliente);
+    alert(erroCliente.message);
+  }
 }
     router.push(`/${booking.empresa}/sucesso`);
   }
