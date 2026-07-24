@@ -187,7 +187,10 @@ console.log("ERROR:", error);
               </thead>
 
                               <tbody>
-                                {agendamentos.map((agendamento) => (
+                                {agendamentos.map((agendamento) => {
+  console.log("AGENDAMENTO:", agendamento);
+
+  return (
                   <tr
                     key={agendamento.id}
                     className="border-t hover:bg-zinc-50 transition"
@@ -219,9 +222,10 @@ console.log("ERROR:", error);
                     </td>
 
                     <td className="p-4">
-                      agendamento.servicos?.[0]
-  ? `R$ ${agendamento.servicos[0].preco.toFixed(2)}`
+                      {agendamento.servicos?.[0]?.preco != null
+  ? `R$ ${Number(agendamento.servicos[0].preco).toFixed(2)}`
   : "-"
+}
                     </td>
 
                     <td className="p-4">
@@ -304,7 +308,8 @@ console.log("ERROR:", error);
                       </div>
                     </td>
                   </tr>
-                ))}
+  );
+})}
               </tbody>
             </table>
 
