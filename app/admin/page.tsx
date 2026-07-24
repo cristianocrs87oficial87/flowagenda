@@ -20,6 +20,7 @@ export default function DashboardPage() {
   const [temServicos, setTemServicos] = useState(false);
   const [temProfissionais, setTemProfissionais] = useState(false);
   const [agendaHoje, setAgendaHoje] = useState<any[]>([]);
+  const [totalHoje, setTotalHoje] = useState(0);
   async function carregarAgendaHoje() {
   const empresa = await empresaAtual();
 
@@ -48,6 +49,7 @@ export default function DashboardPage() {
   }
 console.log("AGENDA HOJE:", data);
   setAgendaHoje(data ?? []);
+  setTotalHoje(data?.length ?? 0);
 }
 
   useEffect(() => {
@@ -222,7 +224,19 @@ console.log("AGENDA HOJE:", data);
   </div>
 
 </Card>
+<div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
 
+  <Card>
+    <p className="text-sm text-zinc-500">
+      📅 Agendamentos Hoje
+    </p>
+
+    <h2 className="mt-3 text-4xl font-bold text-violet-600">
+      {totalHoje}
+    </h2>
+  </Card>
+
+</div>
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
 
   {cards.map((card) => {
