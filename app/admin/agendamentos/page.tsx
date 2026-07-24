@@ -41,20 +41,22 @@ export default function AgendamentosPage() {
   const { data, error } = await supabase
     .from("agendamentos")
     .select(`
-      id,
-      cliente_nome,
-      cliente_whatsapp,
-      data,
-      horario,
-      status,
-      servicos (
-        nome,
-        preco
-      ),
-      profissionais (
-        nome
-      )
-    `)
+  id,
+  cliente_nome,
+  cliente_whatsapp,
+  data,
+  horario,
+  status,
+
+  servicos!agendamentos_servico_id_fkey (
+    nome,
+    preco
+  ),
+
+  profissionais!agendamentos_profissional_id_fkey (
+    nome
+  )
+`)
     .eq("empresa_id", empresa.id)
     .order("data", { ascending: false })
     .order("horario", { ascending: false });
