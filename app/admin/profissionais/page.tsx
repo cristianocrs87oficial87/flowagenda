@@ -207,7 +207,12 @@ type="file"
     setPreview(URL.createObjectURL(arquivo));
   }}
 />
-
+<label
+  htmlFor="foto-profissional"
+  className="flex w-full cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-violet-300 bg-violet-50 py-4 font-medium text-violet-700 hover:bg-violet-100 transition"
+>
+  📷 Selecionar foto do profissional
+</label>
           <Button
             onClick={salvarProfissional}
             className="w-full"
