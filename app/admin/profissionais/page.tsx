@@ -194,8 +194,10 @@ setEditandoId(null);
   </div>
 )}
           <input
-  type="file"
+  id="foto-profissional"
+type="file"
   accept="image/*"
+  className="hidden"
   onChange={(e) => {
     const arquivo = e.target.files?.[0];
 
