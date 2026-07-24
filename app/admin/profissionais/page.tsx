@@ -8,6 +8,7 @@ import { empresaAtual } from "@/lib/auth";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
+import { FaCamera } from "react-icons/fa";
 
 interface Profissional {
   id: string;
@@ -209,9 +210,13 @@ type="file"
 />
 <label
   htmlFor="foto-profissional"
-  className="flex w-full cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-violet-300 bg-violet-50 py-4 font-medium text-violet-700 hover:bg-violet-100 transition"
+  className="flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-violet-300 bg-violet-50 p-6 text-violet-700 transition hover:bg-violet-100 cursor-pointer"
 >
-  📷 Selecionar foto do profissional
+  <FaCamera className="text-4xl text-violet-600" />
+
+<span className="text-center font-semibold">
+  Selecionar foto do profissional
+</span>
 </label>
           <Button
             onClick={salvarProfissional}
