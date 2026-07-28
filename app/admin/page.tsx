@@ -81,18 +81,29 @@ export default function DashboardPage() {
 
   carregarAgendaHoje();
 }
-function enviarLembrete(item: any) {
-  const mensagem = `Olá ${item.cliente_nome}!
+async function enviarLembrete(item: any) {
+  const empresa = await empresaAtual();
 
-Passando para lembrar do seu atendimento hoje.
+if (!empresa) return;
+  const mensagem = `Olá ${item.cliente_nome}! 😊
+
+Este é um lembrete do seu agendamento na ${empresa.nome}.
 
 💇 Serviço: ${item.servicos?.nome ?? "-"}
 
-👩 Profissional: ${item.profissionais?.nome ?? "-"}
+👤 Profissional: ${item.profissionais?.nome ?? "-"}
 
 🕒 Horário: ${item.horario?.slice(0, 5)}
 
-Estamos te esperando 😊`;
+📍 Endereço:
+${empresa.endereco ?? ""}, ${empresa.numero ?? ""}
+${empresa.bairro ?? ""}
+${empresa.cidade ?? ""} ${empresa.cep ? "- CEP: " + empresa.cep : ""}
+
+🗺️ Como chegar:
+${empresa.google_maps ?? ""}
+
+Nos vemos em breve! `;
 
   const url = `https://wa.me/55${item.cliente_whatsapp}?text=${encodeURIComponent(
     mensagem

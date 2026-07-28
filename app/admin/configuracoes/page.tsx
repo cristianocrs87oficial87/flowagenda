@@ -412,7 +412,7 @@ ${linkAgendamento}`
   <br />
   4. Toque em <strong>Copiar link</strong>.
   <br />
-  5.Cole o link neste campo.
+  5. Cole o link neste campo.
 </p>
 </div>
 <div className="mt-4">
