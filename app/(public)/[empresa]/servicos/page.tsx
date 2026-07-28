@@ -69,7 +69,7 @@ export default function ServicosPage() {
       <Card className="w-full max-w-md">
 
         <Link
-          href={`/${empresa}`}
+  href={`/${empresa}/profissionais`}
           className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900"
         >
           <ArrowLeft size={18} />
