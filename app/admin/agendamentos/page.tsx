@@ -213,22 +213,21 @@ return (
         </a>
 
         {agendamento.status === "Agendado" && (
-          <button
-            onClick={() => alterarStatus(agendamento.id, "Confirmado")}
-            className="rounded-lg bg-yellow-500 py-2 text-white"
-          >
-            Confirmar
-          </button>
-        )}
-
-        {agendamento.status === "Confirmado" && (
-          <button
-            onClick={() => alterarStatus(agendamento.id, "Finalizado")}
-            className="rounded-lg bg-green-600 py-2 text-white"
-          >
-            Finalizar
-          </button>
-        )}
+  <button
+    onClick={() => alterarStatus(agendamento.id, "Em atendimento")}
+    className="rounded-lg bg-violet-600 py-2 text-white"
+  >
+    Em atendimento
+  </button>
+)}
+        {agendamento.status === "Em atendimento" && (
+  <button
+    onClick={() => alterarStatus(agendamento.id, "Finalizado")}
+    className="rounded-lg bg-green-600 py-2 text-white"
+  >
+    Finalizar
+  </button>
+)}
 
         <button
           onClick={() => excluirAgendamento(agendamento.id)}
@@ -343,11 +342,11 @@ return (
                               ? "bg-blue-100 text-blue-700"
                               : ""
                           }
-                          ${
-                            agendamento.status === "Confirmado"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : ""
-                          }
+                         {
+  agendamento.status === "Em atendimento"
+    ? "bg-violet-100 text-violet-700"
+    : ""
+}
                           ${
                             agendamento.status === "Finalizado"
                               ? "bg-green-100 text-green-700"
@@ -369,48 +368,48 @@ return (
   <div className="flex flex-wrap justify-center gap-2">
 
     {agendamento.status === "Agendado" && (
-      <>
-        <button
-          onClick={() =>
-            alterarStatus(agendamento.id, "Confirmado")
-          }
-          className="px-3 py-1 rounded-lg bg-yellow-500 text-white text-sm"
-        >
-          Confirmar
-        </button>
+  <>
+    <button
+      onClick={() =>
+        alterarStatus(agendamento.id, "Em atendimento")
+      }
+      className="px-3 py-1 rounded-lg bg-violet-600 text-white text-sm"
+    >
+      Em atendimento
+    </button>
 
-        <button
-          onClick={() =>
-            alterarStatus(agendamento.id, "Cancelado")
-          }
-          className="px-3 py-1 rounded-lg bg-red-500 text-white text-sm"
-        >
-          Cancelar
-        </button>
-      </>
-    )}
+    <button
+      onClick={() =>
+        alterarStatus(agendamento.id, "Cancelado")
+      }
+      className="px-3 py-1 rounded-lg bg-red-500 text-white text-sm"
+    >
+      Cancelar
+    </button>
+  </>
+)}
 
-    {agendamento.status === "Confirmado" && (
-      <>
-        <button
-          onClick={() =>
-            alterarStatus(agendamento.id, "Finalizado")
-          }
-          className="px-3 py-1 rounded-lg bg-green-600 text-white text-sm"
-        >
-          Finalizar
-        </button>
+    {agendamento.status === "Em atendimento" && (
+  <>
+    <button
+      onClick={() =>
+        alterarStatus(agendamento.id, "Finalizado")
+      }
+      className="px-3 py-1 rounded-lg bg-green-600 text-white text-sm"
+    >
+      Finalizar
+    </button>
 
-        <button
-          onClick={() =>
-            alterarStatus(agendamento.id, "Cancelado")
-          }
-          className="px-3 py-1 rounded-lg bg-red-500 text-white text-sm"
-        >
-          Cancelar
-        </button>
-      </>
-    )}
+    <button
+      onClick={() =>
+        alterarStatus(agendamento.id, "Cancelado")
+      }
+      className="px-3 py-1 rounded-lg bg-red-500 text-white text-sm"
+    >
+      Cancelar
+    </button>
+  </>
+)}
 
     {agendamento.status === "Finalizado" && (
       <span className="px-3 py-1 rounded-lg bg-green-100 text-green-700 text-sm font-semibold">

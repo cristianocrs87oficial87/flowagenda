@@ -67,6 +67,19 @@ export default function DashboardPage() {
 
     setReceitaHoje(receita);
   }
+  async function alterarStatus(id: number, status: string) {
+  const { error } = await supabase
+    .from("agendamentos")
+    .update({ status })
+    .eq("id", id);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  carregarAgendaHoje();
+}
 
   useEffect(() => {
     carregarAgendaHoje();
@@ -143,7 +156,7 @@ export default function DashboardPage() {
         <Card>
 
           <p className="text-sm text-zinc-500">
-            💰 Receita Hoje
+            💰 Receita Prevista
           </p>
 
           <h2 className="mt-2 text-3xl font-bold text-green-600">
@@ -154,47 +167,6 @@ export default function DashboardPage() {
 
       </div>
 
-      <Card>
-
-        <h2 className="text-xl font-semibold">
-          👤 Próximo Atendimento
-        </h2>
-
-        <div className="mt-5">
-
-          {agendaHoje.length > 0 ? (
-
-            <>
-
-              <p className="text-3xl font-bold text-violet-600">
-                {agendaHoje[0].horario?.slice(0, 5)}
-              </p>
-
-              <p className="mt-3 text-lg font-semibold">
-                {agendaHoje[0].cliente_nome}
-              </p>
-
-              <p className="mt-1 text-sm text-zinc-500">
-                {agendaHoje[0].servicos?.nome ?? "-"}
-              </p>
-
-              <p className="text-sm text-zinc-500">
-                {agendaHoje[0].profissionais?.nome ?? "-"}
-              </p>
-
-            </>
-
-          ) : (
-
-            <p className="text-zinc-500">
-              Nenhum atendimento para hoje.
-            </p>
-
-          )}
-
-        </div>
-
-      </Card>
 
       <Card>
 
@@ -241,19 +213,39 @@ export default function DashboardPage() {
 
                     <span
                       className={`rounded-full px-3 py-1 text-xs font-medium ${
-                        item.status === "Agendado"
-                          ? "bg-yellow-100 text-yellow-700"
-                          : item.status === "Confirmado"
-                          ? "bg-blue-100 text-blue-700"
-                          : item.status === "Finalizado"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
+                       item.status === "Agendado"
+  ? "bg-yellow-100 text-yellow-700"
+  : item.status === "Em atendimento"
+  ? "bg-violet-100 text-violet-700"
+  : item.status === "Finalizado"
+  ? "bg-green-100 text-green-700"
+  : "bg-red-100 text-red-700"
                       }`}
                     >
                       {item.status}
                     </span>
 
                   </div>
+                  <div className="mt-4 border-t border-zinc-200 pt-4">
+
+  <div className="flex flex-wrap gap-2">
+
+    <button
+      className="rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white hover:bg-green-700"
+    >
+      💬 Lembrete
+    </button>
+
+    <button
+  onClick={() => alterarStatus(item.id, "Em atendimento")}
+  className="rounded-lg bg-violet-600 px-3 py-2 text-sm font-medium text-white hover:bg-violet-700"
+>
+  🟢 Em atendimento
+</button>
+
+  </div>
+
+</div>
 
                 </div>
 
