@@ -10,6 +10,8 @@ import { Card } from "@/components/ui/Card";
 import { useBooking } from "@/contexts";
 
 import { supabase } from "@/lib/supabase";
+import Progress from "@/components/booking/Progress";
+import BookingSummary from "@/components/booking/BookingSummary";
 
 import {
   gerarHorarios,
@@ -130,6 +132,10 @@ setLoading(false);
           <ArrowLeft size={18} />
           Voltar
         </Link>
+
+        <Progress step={3} />
+
+        <BookingSummary />
 
         <h1 className="text-2xl font-bold mt-6">
           Escolha um horário

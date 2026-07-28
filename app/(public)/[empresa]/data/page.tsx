@@ -8,6 +8,8 @@ import { ArrowLeft } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { useBooking } from "@/contexts";
 import { supabase } from "@/lib/supabase";
+import Progress from "@/components/booking/Progress";
+import BookingSummary from "@/components/booking/BookingSummary";
 
 interface DiaDisponivel {
   id: string;
@@ -116,6 +118,8 @@ export default function DataPage() {
           <ArrowLeft size={18} />
           Voltar
         </Link>
+
+        <Progress step={2} />
 
         <h1 className="text-2xl font-bold mt-6">
           Escolha uma data

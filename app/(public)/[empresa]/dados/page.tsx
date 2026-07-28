@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/Input";
 
 import { useBooking } from "@/contexts";
 import { supabase } from "@/lib/supabase";
+import Progress from "@/components/booking/Progress";
+import BookingSummary from "@/components/booking/BookingSummary";
 
 export default function DadosPage() {
   const router = useRouter();
@@ -143,6 +145,10 @@ if (!clienteExistente) {
           <ArrowLeft size={18} />
           Voltar
         </Link>
+
+        <Progress step={4} />
+
+        <BookingSummary />
 
         <h1 className="text-2xl font-bold mt-6">
           Seus dados

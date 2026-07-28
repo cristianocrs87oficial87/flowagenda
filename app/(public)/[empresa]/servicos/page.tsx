@@ -10,6 +10,7 @@ import { supabase } from "@/lib/supabase";
 
 import { Card } from "@/components/ui/Card";
 import { useBooking } from "@/contexts";
+import Progress from "@/components/booking/Progress";
 
 interface Servico {
   id: string;
@@ -75,6 +76,8 @@ export default function ServicosPage() {
           <ArrowLeft size={18} />
           Voltar
         </Link>
+
+        <Progress step={1} />
 
         <h1 className="text-2xl font-bold mt-6">
           Escolha um serviço
