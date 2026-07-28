@@ -109,7 +109,8 @@ export default function DataPage() {
     <main className="min-h-screen bg-zinc-100 flex items-center justify-center p-6">
       <Card className="w-full max-w-md">
         <Link
-          href={`/${empresa}/profissionais`}
+  href={`/${empresa}/servicos`}
+  
           className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900"
         >
           <ArrowLeft size={18} />
