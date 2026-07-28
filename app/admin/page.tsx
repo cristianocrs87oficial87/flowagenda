@@ -236,12 +236,23 @@ export default function DashboardPage() {
       💬 Lembrete
     </button>
 
-    <button
-  onClick={() => alterarStatus(item.id, "Em atendimento")}
-  className="rounded-lg bg-violet-600 px-3 py-2 text-sm font-medium text-white hover:bg-violet-700"
->
-  🟢 Em atendimento
-</button>
+    {item.status === "Agendado" && (
+  <button
+    onClick={() => alterarStatus(item.id, "Em atendimento")}
+    className="rounded-lg bg-violet-600 px-3 py-2 text-sm font-medium text-white hover:bg-violet-700"
+  >
+    🟢 Em atendimento
+  </button>
+)}
+
+{item.status === "Em atendimento" && (
+  <button
+    onClick={() => alterarStatus(item.id, "Finalizado")}
+    className="rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white hover:bg-green-700"
+  >
+    ✅ Finalizar
+  </button>
+)}
 
   </div>
 
