@@ -33,6 +33,7 @@ export default function DashboardPage() {
       .select(`
         id,
         cliente_nome,
+         cliente_whatsapp,
         horario,
         status,
         servicos(
@@ -79,6 +80,25 @@ export default function DashboardPage() {
   }
 
   carregarAgendaHoje();
+}
+function enviarLembrete(item: any) {
+  const mensagem = `Olá ${item.cliente_nome}!
+
+Passando para lembrar do seu atendimento hoje.
+
+💇 Serviço: ${item.servicos?.nome ?? "-"}
+
+👩 Profissional: ${item.profissionais?.nome ?? "-"}
+
+🕒 Horário: ${item.horario?.slice(0, 5)}
+
+Estamos te esperando 😊`;
+
+  const url = `https://wa.me/55${item.cliente_whatsapp}?text=${encodeURIComponent(
+    mensagem
+  )}`;
+
+  window.open(url, "_blank");
 }
 
   useEffect(() => {
@@ -231,6 +251,7 @@ export default function DashboardPage() {
   <div className="flex flex-wrap gap-2">
 
     <button
+    onClick={() => enviarLembrete(item)}
       className="rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white hover:bg-green-700"
     >
       💬 Lembrete
