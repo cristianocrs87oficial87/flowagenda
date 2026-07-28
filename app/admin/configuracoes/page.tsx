@@ -23,6 +23,12 @@ export default function ConfiguracoesPage() {
 const [descricao, setDescricao] = useState("");
 const [whatsapp, setWhatsapp] = useState("");
 const [instagram, setInstagram] = useState("");
+const [endereco, setEndereco] = useState("");
+const [numero, setNumero] = useState("");
+const [bairro, setBairro] = useState("");
+const [cidade, setCidade] = useState("");
+const [cep, setCep] = useState("");
+const [googleMaps, setGoogleMaps] = useState("");
 
 const [mostrarWhatsapp, setMostrarWhatsapp] = useState(true);
 const [mostrarInstagram, setMostrarInstagram] = useState(true);
@@ -53,6 +59,12 @@ const [mostrarInstagram, setMostrarInstagram] = useState(true);
 setDescricao((empresa as any).descricao ?? "");
 setWhatsapp(empresa.telefone ?? "");
 setInstagram((empresa as any).instagram ?? "");
+setEndereco((empresa as any).endereco ?? "");
+setNumero((empresa as any).numero ?? "");
+setBairro((empresa as any).bairro ?? "");
+setCidade((empresa as any).cidade ?? "");
+setCep((empresa as any).cep ?? "");
+setGoogleMaps((empresa as any).google_maps ?? "");
 
 setMostrarWhatsapp(
   (empresa as any).mostrar_whatsapp ?? true
@@ -317,6 +329,85 @@ ${linkAgendamento}`
     onChange={(e) => setInstagram(e.target.value)}
     placeholder="@seuinstagram"
   />
+</div>
+<div className="mt-4">
+  <label className="font-medium">
+    Endereço
+  </label>
+
+  <Input
+    value={endereco}
+    onChange={(e) => setEndereco(e.target.value)}
+    placeholder="Ex.: Av. Andrômeda"
+  />
+</div>
+<div className="mt-4">
+  <label className="font-medium">
+    Número
+  </label>
+
+  <Input
+    value={numero}
+    onChange={(e) => setNumero(e.target.value)}
+    placeholder="Ex.: 123"
+  />
+</div>
+<div className="mt-4">
+  <label className="font-medium">
+    Bairro
+  </label>
+
+  <Input
+    value={bairro}
+    onChange={(e) => setBairro(e.target.value)}
+    placeholder="Ex.: Jardim Satélite"
+  />
+</div>
+<div className="mt-4">
+  <label className="font-medium">
+    Cidade
+  </label>
+
+  <Input
+    value={cidade}
+    onChange={(e) => setCidade(e.target.value)}
+    placeholder="Ex.: São José dos Campos - SP"
+  />
+</div>
+<div className="mt-4">
+  <label className="font-medium">
+    CEP
+  </label>
+
+  <Input
+    value={cep}
+    onChange={(e) => setCep(e.target.value)}
+    placeholder="Ex.: 12230-000"
+  />
+</div>
+<div className="mt-4">
+  <label className="font-medium">
+    Link do Google Maps
+  </label>
+
+  <Input
+    value={googleMaps}
+    onChange={(e) => setGoogleMaps(e.target.value)}
+    placeholder="https://maps.app.goo.gl/..."
+  />
+  <p className="mt-2 text-sm text-zinc-500">
+  <strong>📍 Como conseguir o link?</strong>
+  <br />
+  1. Abra o Google Maps.
+  <br />
+  2. Procure seu estabelecimento.
+  <br />
+  3. Toque em <strong>Compartilhar</strong>.
+  <br />
+  4. Toque em <strong>Copiar link</strong>.
+  <br />
+  5. 5. Cole o link neste campo.
+</p>
 </div>
 <div className="mt-4">
   <label className="flex items-center gap-2">
