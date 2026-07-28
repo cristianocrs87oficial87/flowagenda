@@ -14,6 +14,7 @@ import { useBooking } from "@/contexts";
 interface Profissional {
   id: string;
   nome: string;
+  foto?: string | null;
 }
 
 export default function ProfissionaisPage() {
@@ -103,10 +104,19 @@ export default function ProfissionaisPage() {
                 <Card className="cursor-pointer hover:border-violet-600 transition-all">
                   <div className="flex items-center gap-4">
 
-                    <div className="w-14 h-14 rounded-full bg-zinc-200 flex items-center justify-center font-bold text-zinc-600">
-                      {profissional.nome.charAt(0).toUpperCase()}
-                    </div>
-
+                    <div className="w-14 h-14 rounded-full overflow-hidden bg-zinc-200 flex items-center justify-center">
+  {profissional.foto ? (
+    <img
+      src={profissional.foto}
+      alt={profissional.nome}
+      className="w-full h-full object-cover"
+    />
+  ) : (
+    <span className="font-bold text-zinc-600">
+      {profissional.nome.charAt(0).toUpperCase()}
+    </span>
+  )}
+</div>
                     <div>
                       <h2 className="font-semibold">
                         {profissional.nome}
