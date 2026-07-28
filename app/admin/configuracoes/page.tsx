@@ -176,6 +176,12 @@ alert("Upload realizado!");
     hora_fechamento: horaFechamento,
     intervalo,
     dias_semana: diasSemana,
+    endereco,
+numero,
+bairro,
+cidade,
+cep,
+google_maps: googleMaps,
   })
   .eq("id", empresa.id);
 
@@ -406,7 +412,7 @@ ${linkAgendamento}`
   <br />
   4. Toque em <strong>Copiar link</strong>.
   <br />
-  5. 5. Cole o link neste campo.
+  5.Cole o link neste campo.
 </p>
 </div>
 <div className="mt-4">
