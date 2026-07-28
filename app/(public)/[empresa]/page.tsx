@@ -90,13 +90,13 @@ export default function EmpresaPage() {
           </p>
 
           <div className="mt-8">
-            <Link href={`/${empresa.slug}/servicos`}>
-              <Button fullWidth>
-                Agendar Horário
-                <ArrowRight size={18} />
-              </Button>
-            </Link>
-          </div>
+  <Link href={`/${empresa.slug}/profissionais`}>
+  <Button fullWidth>
+    Agendar Horário
+    <ArrowRight size={18} />
+  </Button>
+</Link>
+</div>
 <div className="mt-5 flex items-center justify-center gap-3 flex-wrap">
 
   {empresa.mostrar_whatsapp && empresa.telefone && (
