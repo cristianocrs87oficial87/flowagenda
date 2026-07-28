@@ -61,7 +61,7 @@ export default function ServicosPage() {
       servico,
     }));
 
-    router.push(`/${empresa}/profissionais`);
+    router.push(`/${empresa}/data`);
   }
 
   return (
