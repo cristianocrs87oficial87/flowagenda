@@ -10,6 +10,7 @@ import { supabase } from "@/lib/supabase";
 
 import { Card } from "@/components/ui/Card";
 import { useBooking } from "@/contexts";
+import Progress from "@/components/booking/Progress";
 
 interface Profissional {
   id: string;
@@ -75,6 +76,7 @@ router.push(`/${empresa}/servicos`);
           <ArrowLeft size={18} />
           Voltar
         </Link>
+        <Progress step={0} />
 
         <h1 className="text-2xl font-bold mt-6">
           Escolha o profissional
