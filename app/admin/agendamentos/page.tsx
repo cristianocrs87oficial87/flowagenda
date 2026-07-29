@@ -38,6 +38,7 @@ const [totalProximos, setTotalProximos] = useState(0);
 const [totalFinalizados, setTotalFinalizados] = useState(0);
 
 const [totalCancelados, setTotalCancelados] = useState(0);
+const [busca, setBusca] = useState("");
 
   async function carregarAgendamentos() {
   setLoading(true);
@@ -195,7 +196,11 @@ useEffect(() => {
     window.removeEventListener("resize", verificarTela);
   };
 }, []);
-
+const agendamentosFiltrados = agendamentos.filter((agendamento) =>
+  agendamento.cliente_nome
+    .toLowerCase()
+    .includes(busca.toLowerCase())
+);
 return (
     <main className="min-h-screen bg-zinc-100 p-8">
       <div className="max-w-7xl mx-auto">
@@ -210,6 +215,15 @@ return (
             <p className="text-zinc-500 mt-2">
               Gerencie todos os agendamentos da empresa.
             </p>
+            <div className="mt-4 mb-4">
+  <input
+    type="text"
+    placeholder="🔍 Buscar cliente..."
+    value={busca}
+    onChange={(e) => setBusca(e.target.value)}
+    className="w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 outline-none focus:border-violet-500"
+  />
+</div>
             <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
   <button
     onClick={() => setAbaSelecionada("hoje")}
@@ -283,7 +297,13 @@ return (
           ) : mobile ? (
 <div className="space-y-4 p-4">
 
-  {agendamentos.map((agendamento) => (
+  {agendamentos
+  .filter((agendamento) =>
+    agendamento.cliente_nome
+      .toLowerCase()
+      .includes(busca.toLowerCase())
+  )
+  .map((agendamento) => (
 
     <div
       key={agendamento.id}
@@ -417,7 +437,13 @@ return (
               </thead>
 
                               <tbody>
-                                {agendamentos.map((agendamento) => {
+                                {agendamentos
+  .filter((agendamento) =>
+    agendamento.cliente_nome
+      .toLowerCase()
+      .includes(busca.toLowerCase())
+  )
+  .map((agendamento) => {
   console.log("AGENDAMENTO:", agendamento);
 
   return (
