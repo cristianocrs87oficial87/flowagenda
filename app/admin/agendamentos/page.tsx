@@ -31,6 +31,13 @@ export default function AgendamentosPage() {
 >("hoje");
   const [loading, setLoading] = useState(true);
   const [mobile, setMobile] = useState(false);
+  const [totalHoje, setTotalHoje] = useState(0);
+
+const [totalProximos, setTotalProximos] = useState(0);
+
+const [totalFinalizados, setTotalFinalizados] = useState(0);
+
+const [totalCancelados, setTotalCancelados] = useState(0);
 
   async function carregarAgendamentos() {
   setLoading(true);
@@ -126,9 +133,54 @@ const { data, error } = await query
 
     carregarAgendamentos();
   }
+async function carregarContadores() {
+  const empresa = await empresaAtual();
 
+  if (!empresa) return;
+
+  const hoje = new Date().toISOString().split("T")[0];
+
+  const [
+    { count: hojeCount },
+    { count: proximosCount },
+    { count: finalizadosCount },
+    { count: canceladosCount },
+  ] = await Promise.all([
+    supabase
+      .from("agendamentos")
+      .select("*", { count: "exact", head: true })
+      .eq("empresa_id", empresa.id)
+      .eq("data", hoje)
+      .in("status", ["Agendado", "Confirmado", "Em atendimento"]),
+
+    supabase
+      .from("agendamentos")
+      .select("*", { count: "exact", head: true })
+      .eq("empresa_id", empresa.id)
+      .gt("data", hoje)
+      .in("status", ["Agendado", "Confirmado"]),
+
+    supabase
+      .from("agendamentos")
+      .select("*", { count: "exact", head: true })
+      .eq("empresa_id", empresa.id)
+      .eq("status", "Finalizado"),
+
+    supabase
+      .from("agendamentos")
+      .select("*", { count: "exact", head: true })
+      .eq("empresa_id", empresa.id)
+      .eq("status", "Cancelado"),
+  ]);
+
+  setTotalHoje(hojeCount ?? 0);
+  setTotalProximos(proximosCount ?? 0);
+  setTotalFinalizados(finalizadosCount ?? 0);
+  setTotalCancelados(canceladosCount ?? 0);
+}
   useEffect(() => {
   carregarAgendamentos();
+  carregarContadores();
 }, [abaSelecionada]);
 useEffect(() => {
   const verificarTela = () => {
@@ -167,7 +219,7 @@ return (
         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
     }`}
   >
-    Hoje
+    Hoje ({totalHoje})
   </button>
 
   <button
@@ -178,7 +230,7 @@ return (
         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
     }`}
   >
-    Próximos
+    Próximos ({totalProximos})
   </button>
 
   <button
@@ -189,7 +241,7 @@ return (
         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
     }`}
   >
-    Finalizados
+    Finalizados ({totalFinalizados})
   </button>
 
   <button
@@ -200,7 +252,7 @@ return (
         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
     }`}
   >
-    Cancelados
+    Cancelados ({totalCancelados})
   </button>
 </div>
           </div>
