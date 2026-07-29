@@ -102,29 +102,42 @@ export async function criarConta(dados: CadastroEmpresa) {
     };
   }
 
-  const { error: erroEmpresa } = await supabase
-    .from("empresas")
-    .insert({
-      usuario_id: usuario.id,
-      nome: dados.nome,
-      responsavel: dados.responsavel,
-      telefone: dados.telefone,
-      email: dados.email,
-      categoria: dados.categoria,
-      slug,
-      hora_abertura: "08:00",
-      hora_fechamento: "18:00",
-      intervalo: 30,
-      dias_semana: [1, 2, 3, 4, 5],
-      ativo: true,
-    });
+  const { data: empresa, error: erroEmpresa } = await supabase
+  .from("empresas")
+  .insert({
+    usuario_id: usuario.id,
+    nome: dados.nome,
+    responsavel: dados.responsavel,
+    telefone: dados.telefone,
+    email: dados.email,
+    categoria: dados.categoria,
+    slug,
+    hora_abertura: "08:00",
+    hora_fechamento: "18:00",
+    intervalo: 30,
+    dias_semana: [1, 2, 3, 4, 5],
+    ativo: true,
+  })
+  .select()
+  .single();
 
-  if (erroEmpresa) {
-    return {
-      success: false,
-      message: erroEmpresa.message,
-    };
-  }
+if (erroEmpresa) {
+  return {
+    success: false,
+    message: erroEmpresa.message,
+  };
+}
+
+const { error: erroAssinatura } = await supabase
+  .from("assinaturas")
+  .insert({
+    empresa_id: empresa.id,
+    status: "teste",
+  });
+
+if (erroAssinatura) {
+  console.error("Erro ao criar assinatura:", erroAssinatura);
+}
 
   return {
     success: true,
