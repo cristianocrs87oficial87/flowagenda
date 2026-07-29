@@ -26,6 +26,9 @@ profissionais: {
 
 export default function AgendamentosPage() {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
+  const [abaSelecionada, setAbaSelecionada] = useState<
+  "hoje" | "proximos" | "finalizados" | "cancelados"
+>("hoje");
   const [loading, setLoading] = useState(true);
   const [mobile, setMobile] = useState(false);
 
@@ -38,29 +41,53 @@ export default function AgendamentosPage() {
     setLoading(false);
     return;
   }
+let query = supabase
+  .from("agendamentos")
+  .select(`
+    id,
+    cliente_nome,
+    cliente_whatsapp,
+    data,
+    horario,
+    status,
 
-  const { data, error } = await supabase
-    .from("agendamentos")
-    .select(`
-  id,
-  cliente_nome,
-  cliente_whatsapp,
-  data,
-  horario,
-  status,
+    servicos!agendamentos_servico_id_fkey (
+      nome,
+      preco
+    ),
 
-  servicos!agendamentos_servico_id_fkey (
-    nome,
-    preco
-  ),
+    profissionais!agendamentos_profissional_id_fkey (
+      nome
+    )
+  `)
+  .eq("empresa_id", empresa.id);
+  const hoje = new Date().toISOString().split("T")[0];
 
-  profissionais!agendamentos_profissional_id_fkey (
-    nome
-  )
-`)
-    .eq("empresa_id", empresa.id)
-    .order("data", { ascending: true })
-.order("horario", { ascending: true });
+switch (abaSelecionada) {
+  case "hoje":
+    query = query
+      .eq("data", hoje)
+      .in("status", ["Agendado", "Confirmado", "Em atendimento"]);
+    break;
+
+  case "proximos":
+    query = query
+      .gt("data", hoje)
+      .in("status", ["Agendado", "Confirmado"]);
+    break;
+
+  case "finalizados":
+    query = query.eq("status", "Finalizado");
+    break;
+
+  case "cancelados":
+    query = query.eq("status", "Cancelado");
+    break;
+}
+console.log("ABA:", abaSelecionada);
+const { data, error } = await query
+  .order("data", { ascending: true })
+  .order("horario", { ascending: true });
     console.log(JSON.stringify(data, null, 2));
 
   if (error) {
@@ -69,6 +96,7 @@ export default function AgendamentosPage() {
 
   if (data) {
     setAgendamentos(data as unknown as Agendamento[]);
+    console.log("TOTAL:", data?.length);
   }
 
   setLoading(false);
@@ -101,8 +129,7 @@ export default function AgendamentosPage() {
 
   useEffect(() => {
   carregarAgendamentos();
-}, []);
-
+}, [abaSelecionada]);
 useEffect(() => {
   const verificarTela = () => {
     setMobile(window.innerWidth < 768);
@@ -131,6 +158,51 @@ return (
             <p className="text-zinc-500 mt-2">
               Gerencie todos os agendamentos da empresa.
             </p>
+            <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
+  <button
+    onClick={() => setAbaSelecionada("hoje")}
+    className={`rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition ${
+      abaSelecionada === "hoje"
+        ? "bg-black text-white"
+        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+    }`}
+  >
+    Hoje
+  </button>
+
+  <button
+    onClick={() => setAbaSelecionada("proximos")}
+    className={`rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition ${
+      abaSelecionada === "proximos"
+        ? "bg-black text-white"
+        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+    }`}
+  >
+    Próximos
+  </button>
+
+  <button
+    onClick={() => setAbaSelecionada("finalizados")}
+    className={`rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition ${
+      abaSelecionada === "finalizados"
+        ? "bg-black text-white"
+        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+    }`}
+  >
+    Finalizados
+  </button>
+
+  <button
+    onClick={() => setAbaSelecionada("cancelados")}
+    className={`rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition ${
+      abaSelecionada === "cancelados"
+        ? "bg-black text-white"
+        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+    }`}
+  >
+    Cancelados
+  </button>
+</div>
           </div>
 
           <Link
