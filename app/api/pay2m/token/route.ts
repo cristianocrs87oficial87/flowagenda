@@ -2,8 +2,21 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const clientId = process.env.PAY2M_CLIENT_ID!;
-    const clientSecret = process.env.PAY2M_CLIENT_SECRET!;
+    console.log("ENV:", process.cwd());
+     console.log("TESTE =>", process.env.TESTE);
+
+console.log(
+  "PAY2M_CLIENT_ID =>",
+  process.env.PAY2M_CLIENT_ID
+);
+
+console.log(
+  "PAY2M_CLIENT_SECRET =>",
+  process.env.PAY2M_CLIENT_SECRET
+);
+
+const clientId = process.env.PAY2M_CLIENT_ID;
+const clientSecret = process.env.PAY2M_CLIENT_SECRET;
     console.log("CLIENT_ID:", clientId ? "OK" : "VAZIO");
 console.log("CLIENT_SECRET:", clientSecret ? "OK" : "VAZIO");
 
