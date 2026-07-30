@@ -127,18 +127,23 @@ if (erroEmpresa) {
     message: erroEmpresa.message,
   };
 }
+const fimTeste = new Date();
+fimTeste.setDate(fimTeste.getDate() + 30);
 
 const { error: erroAssinatura } = await supabase
   .from("assinaturas")
   .insert({
     empresa_id: empresa.id,
     status: "teste",
+    inicio_teste: new Date().toISOString(),
+    fim_teste: fimTeste.toISOString(),
   });
 
 if (erroAssinatura) {
-  console.error("Erro ao criar assinatura:", erroAssinatura);
+  console.error("ERRO ASSINATURA:");
+  console.error(erroAssinatura);
+  throw erroAssinatura;
 }
-
   return {
     success: true,
     slug,

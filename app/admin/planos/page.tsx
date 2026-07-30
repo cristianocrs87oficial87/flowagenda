@@ -18,7 +18,7 @@ const [status, setStatus] = useState("");
 
 const [diasRestantes, setDiasRestantes] = useState(0);
 
-const [empresaId, setEmpresaId] = useState<number | null>(null);
+const [empresaId, setEmpresaId] = useState<string | null>(null);
 useEffect(() => {
   carregarPlano();
 }, []);
@@ -26,6 +26,7 @@ async function carregarPlano() {
   setLoading(true);
 
   const empresa = await empresaAtual();
+  console.log("EMPRESA:", empresa);
 
   if (!empresa) {
     setLoading(false);
@@ -34,11 +35,15 @@ async function carregarPlano() {
 
   setEmpresaId(empresa.id);
 
-  const { data } = await supabase
-    .from("assinaturas")
-    .select("*")
-    .eq("empresa_id", empresa.id)
-    .single();
+  const { data, error } = await supabase
+  .from("assinaturas")
+  .select("*")
+  .eq("empresa_id", empresa.id)
+  .single();
+
+console.log("EMPRESA ID:", empresa.id);
+console.log("ASSINATURA:", data);
+console.log("ERRO:", error);
 
   if (!data) {
     setLoading(false);
