@@ -102,7 +102,10 @@ export async function criarConta(dados: CadastroEmpresa) {
     };
   }
 
-  const { data: empresa, error: erroEmpresa } = await supabase
+ const fimTeste = new Date();
+fimTeste.setDate(fimTeste.getDate() + 30);
+
+const { data: empresa, error: erroEmpresa } = await supabase
   .from("empresas")
   .insert({
     usuario_id: usuario.id,
@@ -117,6 +120,10 @@ export async function criarConta(dados: CadastroEmpresa) {
     intervalo: 30,
     dias_semana: [1, 2, 3, 4, 5],
     ativo: true,
+
+    // TESTE GRATUITO
+    premium: false,
+    premium_ate: fimTeste.toISOString(),
   })
   .select()
   .single();
@@ -127,8 +134,6 @@ if (erroEmpresa) {
     message: erroEmpresa.message,
   };
 }
-const fimTeste = new Date();
-fimTeste.setDate(fimTeste.getDate() + 30);
 
 const { error: erroAssinatura } = await supabase
   .from("assinaturas")
