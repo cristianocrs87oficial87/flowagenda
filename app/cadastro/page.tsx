@@ -53,9 +53,7 @@ export default function CadastroPage() {
       return;
     }
 
-    alert("Conta criada com sucesso!");
-
-    router.push("/login");
+    router.push("/bem-vindo");
   }
 
   return (

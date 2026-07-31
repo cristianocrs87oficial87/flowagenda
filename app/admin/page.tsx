@@ -20,8 +20,34 @@ export default function DashboardPage() {
   const [agendaHoje, setAgendaHoje] = useState<any[]>([]);
   const [totalHoje, setTotalHoje] = useState(0);
   const [receitaHoje, setReceitaHoje] = useState(0);
+  const [diasRestantes, setDiasRestantes] = useState(30);
+async function carregarPlano() {
 
+  const empresa = await empresaAtual();
+
+  if (!empresa) return;
+
+  const { data } = await supabase
+    .from("empresas")
+    .select("premium_ate")
+    .eq("id", empresa.id)
+    .single();
+
+  if (!data?.premium_ate) return;
+
+  const dias = Math.max(
+    0,
+    Math.ceil(
+      (new Date(data.premium_ate).getTime() - Date.now()) /
+        (1000 * 60 * 60 * 24)
+    )
+  );
+
+  setDiasRestantes(dias);
+
+}
   async function carregarAgendaHoje() {
+  
     const empresa = await empresaAtual();
 
     if (!empresa) return;
@@ -112,10 +138,11 @@ Nos vemos em breve! `;
   window.open(url, "_blank");
 }
 
-  useEffect(() => {
-    carregarAgendaHoje();
-  }, []);
-
+  
+useEffect(() => {
+  carregarAgendaHoje();
+  carregarPlano();
+}, []);
   const cards = [
     {
       titulo: "Agendamentos",
@@ -166,6 +193,44 @@ Nos vemos em breve! `;
         <p className="mt-2 text-zinc-500">
           Confira rapidamente como está sua agenda de hoje.
         </p>
+        {/* STATUS DO PLANO */}
+
+<Card className="border-violet-200 bg-violet-50">
+
+  <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+
+    <div>
+
+      <p className="text-sm font-semibold text-violet-700">
+        🎁 Você está no período de teste Premium
+      </p>
+
+      <h2 className="mt-2 text-2xl font-bold text-zinc-900">
+        Aproveite todos os recursos gratuitamente
+      </h2>
+
+      <p className="mt-2 text-zinc-600">
+        Seu teste termina em
+        <strong className="text-violet-700">
+          {" "}
+          {diasRestantes} dias
+        </strong>.
+        Depois disso o plano continua por apenas
+        <strong> R$ 39,90/mês</strong>.
+      </p>
+
+    </div>
+
+    <Link
+      href="/admin/planos"
+      className="inline-flex h-12 items-center justify-center rounded-xl bg-violet-600 px-6 font-semibold text-white transition hover:bg-violet-700"
+    >
+      Ver Plano
+    </Link>
+
+  </div>
+
+</Card>
 
       </div>
 
