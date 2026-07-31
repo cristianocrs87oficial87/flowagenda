@@ -80,25 +80,22 @@ useEffect(() => {
     if (!empresa) return;
 
     const premiumAtivo =
-      empresa.premium &&
-      empresa.premium_ate &&
-      new Date(empresa.premium_ate) > new Date();
+  empresa.premium_ate &&
+  new Date(empresa.premium_ate) > new Date();
 
-    setPremium(!!premiumAtivo);
+setPremium(Boolean(premiumAtivo));
+setPremiumAte(empresa.premium_ate);
 
-    setPremiumAte(empresa.premium_ate);
+if (empresa.premium_ate) {
+  const fim = new Date(empresa.premium_ate);
 
-    if (empresa.premium_ate) {
-      const dias = Math.max(
-        0,
-        Math.ceil(
-          (new Date(empresa.premium_ate).getTime() - Date.now()) /
-            (1000 * 60 * 60 * 24)
-        )
-      );
+  const dias = Math.ceil(
+    (fim.getTime() - Date.now()) /
+      (1000 * 60 * 60 * 24)
+  );
 
-      setDiasRestantes(dias);
-    }
+  setDiasRestantes(Math.max(0, dias));
+}
   }
 
   carregarPlano();
@@ -212,84 +209,102 @@ return (
           Gerencie sua assinatura.
         </p>
 
-        <section className="mt-8 rounded-3xl border bg-white p-8 shadow-sm">
+        <section className="rounded-3xl border border-gray-200 bg-white p-8 shadow-md">
 
-          <div className="flex items-center justify-between">
+  <div className="flex items-start justify-between">
 
-            <div>
+    <div>
 
-              <h2 className="text-2xl font-bold">
-                Seu Plano Atual
-              </h2>
+      <h2 className="text-3xl font-bold">
+        Seu Plano Atual
+      </h2>
 
-              <p className="text-gray-500 mt-1">
-                Acompanhe seu período Premium.
-              </p>
+      <p className="mt-2 text-gray-500">
+        Gerencie sua assinatura Premium.
+      </p>
 
-            </div>
+    </div>
 
-            <div
-              className={`rounded-2xl px-5 py-3 font-semibold ${
-                premium
-                  ? "bg-green-100 text-green-700"
-                  : "bg-indigo-100 text-indigo-700"
-              }`}
-            >
-              {premium ? "Premium" : "Teste Gratuito"}
-            </div>
+    <span
+      className={`rounded-full px-5 py-2 text-sm font-semibold ${
+        premium
+          ? "bg-green-100 text-green-700"
+          : "bg-indigo-100 text-indigo-700"
+      }`}
+    >
+      {premium ? "Premium Ativo" : "Teste Gratuito"}
+    </span>
 
-          </div>
+  </div>
 
-          <div className="mt-8 grid md:grid-cols-3 gap-5">
+  {!premium && (
 
-            <div className="rounded-2xl border p-5">
+    <div className="mt-8 rounded-2xl bg-indigo-50 p-5">
 
-              <p className="text-gray-500 text-sm">
-                Plano
-              </p>
+      <div className="flex gap-4">
 
-              <h3 className="mt-2 text-2xl font-bold">
-                {premium ? "Premium" : "Grátis"}
-              </h3>
+        <Sparkles className="h-7 w-7 text-indigo-600 mt-1" />
 
-            </div>
+        <div>
 
-            <div className="rounded-2xl border p-5">
+          <h3 className="font-semibold text-indigo-700">
+            Aproveite todos os recursos Premium
+          </h3>
 
-              <p className="text-gray-500 text-sm">
-                Validade
-              </p>
+          <p className="mt-2 text-gray-600">
+            Você está utilizando gratuitamente todas as funcionalidades do
+            FlowAgenda Premium durante o período de teste.
+          </p>
 
-              <h3 className="mt-2 text-2xl font-bold">
-                {dataPremium}
-              </h3>
+        </div>
 
-            </div>
+      </div>
 
-            <div className="rounded-2xl border p-5">
+    </div>
 
-              <p className="text-gray-500 text-sm">
-                Dias restantes
-              </p>
+  )}
 
-              <h3 className="mt-2 text-2xl font-bold">
-                {diasRestantes}
-              </h3>
+  <div className="mt-8 grid gap-5 md:grid-cols-2">
 
-            </div>
+    <div className="rounded-2xl border border-gray-200 bg-slate-50 p-6">
 
-          </div>
+      <p className="text-gray-500 text-sm">
+        Validade
+      </p>
 
-        </section>
+      <h3 className="mt-2 text-2xl font-bold">
+        {dataPremium}
+      </h3>
+
+    </div>
+
+    <div className="rounded-2xl border border-gray-200 bg-slate-50 p-6">
+
+      <p className="text-gray-500 text-sm">
+        Dias restantes
+      </p>
+
+      <h3 className="mt-2 text-2xl font-bold text-indigo-600">
+        {diasRestantes} dias
+      </h3>
+
+    </div>
+
+  </div>
+
+</section>
         <section className="mt-8 grid gap-6 lg:grid-cols-2">
 
   {/* PLANO MENSAL */}
 
-  <div className="rounded-3xl border bg-white p-8 shadow-sm">
+  <div className="rounded-3xl border border-gray-200 bg-white p-10 shadow-lg hover:shadow-xl transition">
 
-    <span className="rounded-full bg-indigo-100 px-3 py-1 text-sm font-semibold text-indigo-700">
-      Premium Mensal
-    </span>
+    <button
+  onClick={() => gerarPix("mensal")}
+  className="mt-10 h-14 w-full rounded-2xl bg-indigo-600 text-white font-semibold shadow-lg hover:bg-indigo-700 transition"
+>
+  Assinar Premium
+</button>
 
     <h2 className="mt-6 text-5xl font-bold">
       R$39,90
@@ -336,7 +351,7 @@ return (
 
   {/* ANUAL */}
 
-  <div className="rounded-3xl border bg-white p-8 shadow-sm">
+  <div className="rounded-3xl border border-gray-200 bg-white p-10 shadow-lg hover:shadow-xl transition">
 
     <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-700">
       Melhor Oferta
@@ -382,11 +397,18 @@ return (
     </div>
 
     <button
-      onClick={() => gerarPix("anual")}
-      className="mt-10 h-14 w-full rounded-2xl border-2 border-green-600 font-semibold text-green-700 hover:bg-green-600 hover:text-white transition"
-    >
-      Assinar Anual
-    </button>
+  onClick={() => gerarPix("anual")}
+  className="mt-10 h-14 w-full rounded-2xl bg-green-600 text-white font-semibold shadow-lg hover:bg-green-700 transition"
+>
+  Assinar Anual
+</button>
+<p className="mt-2 text-green-600 font-semibold">
+Economize R$81 por ano
+</p>
+
+<p className="text-sm text-gray-500">
+Menos de R$34 por mês
+</p>
 
   </div>
 
