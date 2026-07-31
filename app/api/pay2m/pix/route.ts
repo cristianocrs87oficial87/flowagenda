@@ -15,19 +15,27 @@ export async function GET(request: Request) {
       );
     }
 
-    // Busca o token
+    console.log("==================================");
+    console.log("INICIANDO GERAÇÃO PIX");
+    console.log("Usuário:", userId);
+    console.log("Plano:", plano);
+    console.log("==================================");
+
+    // Buscar token
     const tokenResponse = await fetch(
       new URL("/api/pay2m/token", request.url)
     );
 
     const tokenData = await tokenResponse.json();
 
-    if (!tokenData.access_token) {
-      console.log("ERRO TOKEN:", tokenData);
+    console.log("TOKEN:");
+    console.log(tokenData);
 
+    if (!tokenData.access_token) {
       return NextResponse.json(
         {
-          erro: "Não foi possível gerar o token da Pay2M",
+          erro: "Token Pay2M não encontrado",
+          detalhe: tokenData,
         },
         {
           status: 500,
@@ -35,24 +43,16 @@ export async function GET(request: Request) {
       );
     }
 
-    const accessToken = tokenData.access_token;
+    const valor = plano === "anual" ? 397 : 39.9;
 
-    console.log("================================");
-    console.log("GERANDO PIX PARA:", userId);
-    console.log("PLANO:", plano);
-    console.log("================================");
-
-    const valor =
-      plano === "anual"
-        ? 497.0
-        : 49.9;
+    console.log("VALOR:", valor);
 
     const response = await fetch(
       "https://portal.pay2m.com.br/api/v1/pix/qrcode",
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${tokenData.access_token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -68,39 +68,48 @@ export async function GET(request: Request) {
 
     const data = await response.json();
 
+    console.log("==================================");
     console.log("STATUS PAY2M:", response.status);
-    console.log("RETORNO PAY2M:");
+    console.log("RESPOSTA PAY2M:");
     console.log(JSON.stringify(data, null, 2));
+    console.log("==================================");
 
     if (!response.ok) {
-      return NextResponse.json(data, {
-        status: response.status,
-      });
+      return NextResponse.json(
+        {
+          erro: "Erro retornado pela Pay2M",
+          detalhe: data,
+        },
+        {
+          status: response.status,
+        }
+      );
     }
 
     const pagamento = {
       usuario_id: userId,
-      reference_code: data.reference_code,
+      reference_code: data.reference_code ?? null,
       transaction_id: data.transaction_id ?? null,
       status: "awaiting_payment",
-      valor: valor,
+      valor,
       qr_code: data.qrcode ?? null,
-      copia_cola: data.content,
+      copia_cola: data.content ?? null,
     };
 
-    console.log("SALVANDO:");
-    console.log(pagamento);
+    console.log("OBJETO PAGAMENTO:");
+    console.log(JSON.stringify(pagamento, null, 2));
 
     const { error } = await supabaseAdmin
       .from("premium_pagamentos")
       .insert(pagamento);
 
-    console.log("INSERT ERROR:", error);
-
     if (error) {
+      console.log("ERRO AO SALVAR:");
+      console.log(error);
+
       return NextResponse.json(
         {
-          erro: "Erro ao salvar pagamento",
+          erro: "Erro ao salvar no banco",
           detalhe: error,
         },
         {
@@ -109,27 +118,25 @@ export async function GET(request: Request) {
       );
     }
 
-    const { data: pagamentos, error: erroSelect } =
-      await supabaseAdmin
-        .from("premium_pagamentos")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-    console.log("ERRO SELECT:", erroSelect);
-    console.log("TOTAL REGISTROS:", pagamentos?.length);
-    console.log("TABELA PREMIUM:");
-    console.log(pagamentos);
+    console.log("PIX GERADO COM SUCESSO");
 
     return NextResponse.json({
+      qr_code: data.qrcode,
       content: data.content,
       reference_code: data.reference_code,
     });
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    console.log("==================================");
+    console.log("ERRO GERAL");
+    console.log(error);
+    console.log(error?.message);
+    console.log(error?.stack);
+    console.log("==================================");
 
     return NextResponse.json(
       {
-        erro: "Falha ao gerar PIX",
+        erro: error?.message ?? "Erro interno",
+        stack: error?.stack,
       },
       {
         status: 500,
