@@ -71,30 +71,38 @@ useEffect(() => {
 
     if (!user) return;
 
-    const { data: empresa } = await supabase
-      .from("empresas")
-      .select("premium, premium_ate")
-      .eq("usuario_id", user.id)
-      .single();
+    const { data: empresa, error } = await supabase
+  .from("empresas")
+  .select("premium, premium_ate")
+  .eq("usuario_id", user.id)
+  .single();
 
-    if (!empresa) return;
+if (error) {
+  console.error("Erro ao carregar empresa:", error);
+  return;
+}
 
-    const premiumAtivo =
-  empresa.premium_ate &&
-  new Date(empresa.premium_ate) > new Date();
+console.log("Empresa:", empresa);
 
-setPremium(Boolean(premiumAtivo));
+if (!empresa) return;
+
+setPremium(Boolean(empresa.premium));
 setPremiumAte(empresa.premium_ate);
 
 if (empresa.premium_ate) {
   const fim = new Date(empresa.premium_ate);
 
-  const dias = Math.ceil(
-    (fim.getTime() - Date.now()) /
-      (1000 * 60 * 60 * 24)
+  const dias = Math.max(
+    0,
+    Math.ceil(
+      (fim.getTime() - Date.now()) /
+        (1000 * 60 * 60 * 24)
+    )
   );
 
-  setDiasRestantes(Math.max(0, dias));
+  setDiasRestantes(dias);
+} else {
+  setDiasRestantes(0);
 }
   }
 
@@ -145,9 +153,9 @@ return (
     {mostrarPix && (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
 
-        <div className="w-full max-w-md rounded-3xl bg-white shadow-2xl overflow-hidden">
+        <div className="w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-[0_25px_80px_rgba(0,0,0,0.25)]">
 
-          <div className="bg-gradient-to-r from-indigo-600 to-violet-600 p-6 text-white">
+          <div className="bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 px-8 py-7 text-white">
 
             <h2 className="text-2xl font-bold">
               FlowAgenda Premium
@@ -159,13 +167,13 @@ return (
 
           </div>
 
-          <div className="p-6">
+          <div className="space-y-6 p-8">
 
             <div className="flex justify-center">
 
               <QRCodeSVG
                 value={pix?.copiaecola ?? ""}
-                size={220}
+                size={190}
               />
 
             </div>
@@ -199,9 +207,9 @@ return (
 
     <main className="min-h-screen bg-slate-50">
 
-      <div className="mx-auto max-w-5xl px-6 py-10">
+      <div className="mx-auto max-w-5xl px-5 py-6">
 
-        <h1 className="text-4xl font-bold">
+        <h1 className="text-3xl font-bold tracking-tight">
           FlowAgenda Premium
         </h1>
 
@@ -209,7 +217,7 @@ return (
           Gerencie sua assinatura.
         </p>
 
-        <section className="rounded-3xl border border-gray-200 bg-white p-8 shadow-md">
+        <section className="mt-5 rounded-3xl border border-gray-200 bg-white p-6 shadow-md">
 
   <div className="flex items-start justify-between">
 
@@ -219,7 +227,7 @@ return (
         Seu Plano Atual
       </h2>
 
-      <p className="mt-2 text-gray-500">
+      <p className="mt-1 text-sm text-gray-500">
         Gerencie sua assinatura Premium.
       </p>
 
@@ -238,35 +246,24 @@ return (
   </div>
 
   {!premium && (
+  <div className="mt-6 rounded-2xl border border-indigo-200 bg-indigo-50 px-5 py-4">
 
-    <div className="mt-8 rounded-2xl bg-indigo-50 p-5">
+    <div className="flex items-center gap-3">
 
-      <div className="flex gap-4">
+      <Sparkles className="h-5 w-5 text-indigo-600" />
 
-        <Sparkles className="h-7 w-7 text-indigo-600 mt-1" />
-
-        <div>
-
-          <h3 className="font-semibold text-indigo-700">
-            Aproveite todos os recursos Premium
-          </h3>
-
-          <p className="mt-2 text-gray-600">
-            Você está utilizando gratuitamente todas as funcionalidades do
-            FlowAgenda Premium durante o período de teste.
-          </p>
-
-        </div>
-
-      </div>
+      <p className="text-sm text-indigo-700 font-medium">
+        Você está no período de teste Premium.
+      </p>
 
     </div>
 
-  )}
+  </div>
+)}
 
-  <div className="mt-8 grid gap-5 md:grid-cols-2">
+  <div className="mt-5 grid gap-4 md:grid-cols-2">
 
-    <div className="rounded-2xl border border-gray-200 bg-slate-50 p-6">
+   <div className="rounded-2xl border border-gray-200 bg-slate-50 p-4">
 
       <p className="text-gray-500 text-sm">
         Validade
@@ -278,7 +275,7 @@ return (
 
     </div>
 
-    <div className="rounded-2xl border border-gray-200 bg-slate-50 p-6">
+    <div className="rounded-2xl border border-gray-200 bg-slate-50 p-4">
 
       <p className="text-gray-500 text-sm">
         Dias restantes
@@ -293,18 +290,12 @@ return (
   </div>
 
 </section>
-        <section className="mt-8 grid gap-6 lg:grid-cols-2">
+        <section className="mt-5 grid gap-5 lg:grid-cols-2">
 
   {/* PLANO MENSAL */}
 
   <div className="rounded-3xl border border-gray-200 bg-white p-10 shadow-lg hover:shadow-xl transition">
 
-    <button
-  onClick={() => gerarPix("mensal")}
-  className="mt-10 h-14 w-full rounded-2xl bg-indigo-600 text-white font-semibold shadow-lg hover:bg-indigo-700 transition"
->
-  Assinar Premium
-</button>
 
     <h2 className="mt-6 text-5xl font-bold">
       R$39,90
@@ -342,7 +333,7 @@ return (
 
     <button
       onClick={() => gerarPix("mensal")}
-      className="mt-10 h-14 w-full rounded-2xl bg-indigo-600 font-semibold text-white hover:bg-indigo-700 transition"
+      className="mt-8 h-14 w-full rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold shadow-lg transition hover:scale-[1.02]"
     >
       Assinar Premium
     </button>
@@ -353,7 +344,7 @@ return (
 
   <div className="rounded-3xl border border-gray-200 bg-white p-10 shadow-lg hover:shadow-xl transition">
 
-    <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-700">
+    <span className="inline-flex items-center rounded-full bg-green-100 px-4 py-2 text-sm font-bold text-green-700">
       Melhor Oferta
     </span>
 
@@ -365,13 +356,17 @@ return (
       por ano
     </p>
 
-    <div className="mt-6 rounded-2xl bg-green-50 p-5">
+    <div className="mt-6 rounded-2xl border border-green-200 bg-green-50 p-5">
 
-      <p className="font-semibold text-green-700">
-        Economize R$81 por ano
-      </p>
+  <p className="text-lg font-bold text-green-700">
+    💰 Economize R$81 por ano
+  </p>
 
-    </div>
+  <p className="mt-1 text-sm text-gray-600">
+    Equivale a menos de <strong>R$34 por mês</strong>.
+  </p>
+
+</div>
 
     <div className="mt-8 space-y-4">
 
@@ -398,7 +393,7 @@ return (
 
     <button
   onClick={() => gerarPix("anual")}
-  className="mt-10 h-14 w-full rounded-2xl bg-green-600 text-white font-semibold shadow-lg hover:bg-green-700 transition"
+  className="mt-8 h-14 w-full rounded-2xl bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold shadow-lg transition hover:scale-[1.02]"
 >
   Assinar Anual
 </button>
