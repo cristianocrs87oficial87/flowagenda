@@ -20,7 +20,7 @@ export default function DashboardPage() {
   const [agendaHoje, setAgendaHoje] = useState<any[]>([]);
   const [totalHoje, setTotalHoje] = useState(0);
   const [receitaHoje, setReceitaHoje] = useState(0);
-  const [diasRestantes, setDiasRestantes] = useState(30);
+  const [diasRestantes, setDiasRestantes] = useState(0);
 async function carregarPlano() {
 
   const empresa = await empresaAtual();
@@ -33,7 +33,10 @@ async function carregarPlano() {
     .eq("id", empresa.id)
     .single();
 
-  if (!data?.premium_ate) return;
+  if (!data?.premium_ate) {
+  setDiasRestantes(0);
+  return;
+}
 
   const dias = Math.max(
     0,

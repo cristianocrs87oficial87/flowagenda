@@ -63,7 +63,7 @@ async function copiarPix() {
 }
 useEffect(() => {
   async function carregarPlano() {
-    await fetch("/api/verificar-premium");
+  
 
     const {
       data: { user },
@@ -82,7 +82,9 @@ if (error) {
   return;
 }
 
-console.log("Empresa:", empresa);
+console.log("Empresa completa:", empresa);
+console.log("premium:", empresa?.premium);
+console.log("premium_ate:", empresa?.premium_ate);
 
 if (!empresa) return;
 
