@@ -140,9 +140,7 @@ const { error: erroAssinatura } = await supabase
   });
 
 if (erroAssinatura) {
-  console.error("ERRO ASSINATURA:");
-  console.error(erroAssinatura);
-  throw erroAssinatura;
+  console.error("Erro ao criar assinatura:", erroAssinatura);
 }
   return {
     success: true,
