@@ -42,7 +42,13 @@ console.log("CLIENT_SECRET:", clientSecret ? "OK" : "VAZIO");
     console.log("TOKEN STATUS:", response.status);
 console.log("TOKEN RETORNO:", data);
 
-    return NextResponse.json(data);
+    if (!response.ok) {
+  return NextResponse.json(data, {
+    status: response.status,
+  });
+}
+
+return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json(
       {

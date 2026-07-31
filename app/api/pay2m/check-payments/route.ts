@@ -81,20 +81,43 @@ export async function GET() {
           );
 
           const {
-            data: empresaData,
-            error: empresaError,
-          } = await supabaseAdmin
-            .from("empresas")
-            .update({
-              premium: true,
-              premium_ate:
-                premiumAte.toISOString(),
-            })
-            .eq(
-              "usuario_id",
-              pagamento.usuario_id
-            )
-            .select();
+  data: empresaData,
+  error: empresaError,
+} = await supabaseAdmin
+  .from("empresas")
+  .update({
+    premium: true,
+    premium_ate: premiumAte.toISOString(),
+  })
+  .eq("usuario_id", pagamento.usuario_id)
+  .select();
+  // Busca a empresa para obter o ID
+const { data: empresa } = await supabaseAdmin
+  .from("empresas")
+  .select("id")
+  .eq("usuario_id", pagamento.usuario_id)
+  .single();
+
+if (empresa) {
+  const agora = new Date().toISOString();
+
+  const { error: assinaturaError } = await supabaseAdmin
+    .from("assinaturas")
+    .upsert(
+      {
+        empresa_id: empresa.id,
+        status: "premium",
+        inicio_teste: agora,
+        fim_teste: premiumAte.toISOString(),
+        premium_ate: premiumAte.toISOString(),
+      },
+      {
+        onConflict: "empresa_id",
+      }
+    );
+
+  console.log("ASSINATURA ERROR:", assinaturaError);
+}
             console.log("EMPRESA DATA:", empresaData);
 console.log("EMPRESA ERROR:", empresaError);
 console.log("USUARIO PROCURADO:", pagamento.usuario_id);
