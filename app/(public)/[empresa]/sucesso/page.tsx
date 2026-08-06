@@ -27,9 +27,7 @@ export default function SucessoPage() {
   : "";
 
 const texto = `
-Olá! 😊
-
-Acabei de realizar um agendamento.
+*Novo Agendamento*
 
 👤 Nome: ${booking.cliente?.nome || ""}
 
@@ -43,7 +41,6 @@ Acabei de realizar um agendamento.
 
 🕒 Horário: ${booking.horario || ""}
 
-Gostaria de confirmar meu atendimento.
 `;
 
 useEffect(() => {
