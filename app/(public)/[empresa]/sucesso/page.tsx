@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { CheckCircle, CalendarDays, Clock, Scissors, User, MessageCircle } from "lucide-react";
+import { CheckCircle, CalendarDays, Clock, Scissors, User } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -17,13 +18,34 @@ export default function SucessoPage() {
   const { booking } = useBooking();
   const [whatsapp, setWhatsapp] = useState("");
 
-  const dataFormatada = booking.data
-    ? new Date(`${booking.data}T12:00:00`).toLocaleDateString("pt-BR", {
-        weekday: "long",
-        day: "2-digit",
-        month: "short",
-      })
-    : "";
+ const dataFormatada = booking.data
+  ? new Date(`${booking.data}T12:00:00`).toLocaleDateString("pt-BR", {
+      weekday: "long",
+      day: "2-digit",
+      month: "short",
+    })
+  : "";
+
+const texto = `
+Olá! 😊
+
+Acabei de realizar um agendamento.
+
+👤 Nome: ${booking.cliente?.nome || ""}
+
+📱 WhatsApp: ${booking.cliente?.whatsapp || ""}
+
+✂️ Serviço: ${booking.servico?.nome || ""}
+
+💇 Profissional: ${booking.profissional?.nome || ""}
+
+📅 Data: ${dataFormatada}
+
+🕒 Horário: ${booking.horario || ""}
+
+Gostaria de confirmar meu atendimento.
+`;
+
 useEffect(() => {
   carregarWhatsapp();
 }, [empresa]);
@@ -111,59 +133,17 @@ console.log("Telefone encontrado:", numero);
 
         <div className="mt-8 space-y-3">
 
-     <Button
-  onClick={() => {
-    if (!whatsapp) {
-      alert("WhatsApp não configurado pela empresa.");
-      return;
-    }
-
-    const texto = `
-Olá! 😊
-
-Acabei de realizar um agendamento.
-
-👤 Nome: ${booking.cliente?.nome || ""}
-
-📱 WhatsApp: ${booking.cliente?.whatsapp || ""}
-
-✂️ Serviço: ${booking.servico?.nome || ""}
-
-💇 Profissional: ${booking.profissional?.nome || ""}
-
-📅 Data: ${dataFormatada}
-
-🕒 Horário: ${booking.horario || ""}
-
-Gostaria de confirmar meu atendimento.
-`;
-
-    window.open(
-      `https://wa.me/55${whatsapp}?text=${encodeURIComponent(texto)}`,
-      "_blank"
-    );
-  }}
-  className="
-    mx-auto
-    flex
-    items-center
-    gap-2
-    rounded-full
-    bg-[#25D366]
-    hover:bg-[#20BD5A]
-    px-6
-    py-2
-    text-sm
-    font-medium
-    text-white
-    shadow-md
-    transition-all
-    duration-300
-  "
+     <a
+  href={`https://wa.me/55${whatsapp}?text=${encodeURIComponent(texto)}`}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="mx-auto flex w-fit items-center gap-2 rounded-full bg-[#25D366] px-4 py-2 text-white shadow-md hover:scale-105 transition-all duration-300"
 >
-  <MessageCircle size={18} />
-  WhatsApp
-</Button>
+  <FaWhatsapp size={18} />
+  <span className="text-sm font-medium">
+    WhatsApp
+  </span>
+</a>
 
           <Link href={`/${empresa}`}>
             <Button fullWidth>
