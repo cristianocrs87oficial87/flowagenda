@@ -7,12 +7,15 @@ import { CheckCircle, CalendarDays, Clock, Scissors, User, MessageCircle } from 
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useBooking } from "@/contexts/BookingContext";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export default function SucessoPage() {
   const params = useParams();
   const empresa = params.empresa as string;
 
   const { booking } = useBooking();
+  const [whatsapp, setWhatsapp] = useState("");
 
   const dataFormatada = booking.data
     ? new Date(`${booking.data}T12:00:00`).toLocaleDateString("pt-BR", {
@@ -21,7 +24,23 @@ export default function SucessoPage() {
         month: "short",
       })
     : "";
+useEffect(() => {
+  carregarWhatsapp();
+}, []);
 
+async function carregarWhatsapp() {
+  const { data } = await supabase
+    .from("empresas")
+    .select("whatsapp")
+    .eq("slug", empresa)
+    .single();
+
+  if (!data?.whatsapp) return;
+
+  const numero = data.whatsapp.replace(/\D/g, "");
+
+  setWhatsapp(numero);
+}
   return (
     <main className="min-h-screen bg-zinc-100 flex items-center justify-center p-6">
       <Card className="w-full max-w-md text-center">
@@ -94,12 +113,25 @@ export default function SucessoPage() {
         <div className="mt-8 space-y-3">
 
           <Button
-            fullWidth
-            className="bg-green-600 hover:bg-green-700"
-          >
-            <MessageCircle size={20} className="mr-2" />
-            Conversar no WhatsApp
-          </Button>
+  fullWidth
+  onClick={() => {
+    if (!whatsapp) {
+      alert("WhatsApp não configurado pela empresa.");
+      return;
+    }
+
+    window.open(
+      `https://wa.me/55${whatsapp}?text=${encodeURIComponent(
+        "Olá! Acabei de realizar um agendamento pelo FlowAgenda e gostaria de falar com vocês."
+      )}`,
+      "_blank"
+    );
+  }}
+  className="h-14 rounded-2xl bg-[#25D366] text-white font-semibold shadow-lg hover:bg-[#1EBE5D] transition-all"
+>
+  <MessageCircle size={22} className="mr-2" />
+  Falar no WhatsApp
+</Button>
 
           <Link href={`/${empresa}`}>
             <Button fullWidth>
