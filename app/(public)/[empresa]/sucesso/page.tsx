@@ -26,17 +26,25 @@ export default function SucessoPage() {
     : "";
 useEffect(() => {
   carregarWhatsapp();
-}, []);
+}, [empresa]);
 
 async function carregarWhatsapp() {
-  console.log("ENTROU NA FUNÇÃO");
-
-  const resposta = await supabase
+  const { data, error } = await supabase
     .from("empresas")
-    .select("*")
-    .eq("slug", empresa);
+    .select("telefone")
+    .eq("slug", empresa)
+    .single();
 
-  console.log("RESPOSTA:", resposta);
+  if (error) {
+    console.log(error);
+    return;
+  }
+
+  if (!data?.telefone) return;
+
+  const numero = data.telefone.replace(/\D/g, "");
+console.log("Telefone encontrado:", numero);
+  setWhatsapp(numero);
 }
   return (
     <main className="min-h-screen bg-zinc-100 flex items-center justify-center p-6">
