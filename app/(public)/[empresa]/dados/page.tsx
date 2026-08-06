@@ -17,7 +17,7 @@ import BookingSummary from "@/components/booking/BookingSummary";
 export default function DadosPage() {
   const router = useRouter();
 
-  const { booking } = useBooking();
+  const { booking, setBooking } = useBooking();
 
   const [nome, setNome] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
@@ -131,6 +131,13 @@ if (!clienteExistente) {
     alert(erroCliente.message);
   }
 }
+setBooking({
+  ...booking,
+  cliente: {
+    nome: nomeLimpo,
+    whatsapp: telefone,
+  },
+});
     router.push(`/${booking.empresa}/sucesso`);
   }
 

@@ -151,36 +151,62 @@ Gostaria de confirmar meu atendimento.
     );
   }}
   className="
-    h-16
-    rounded-2xl
-    bg-[#25D366]
-    hover:bg-[#1EBE5D]
-    shadow-lg
-    hover:shadow-xl
+    group
+    h-20
+    rounded-3xl
+    bg-gradient-to-r
+    from-[#25D366]
+    to-[#1EBE5D]
+    shadow-xl
+    hover:shadow-2xl
+    hover:scale-[1.02]
+    active:scale-[0.98]
     transition-all
     duration-300
     border
-    border-green-400
+    border-green-300
+    overflow-hidden
   "
 >
-  <div className="flex items-center justify-center gap-3 w-full">
-    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-      <MessageCircle
-        size={22}
-        strokeWidth={2.5}
-        className="text-white"
-      />
+  <div className="flex items-center justify-between w-full px-6">
+
+    <div className="flex items-center gap-4">
+
+      <div className="
+        w-14
+        h-14
+        rounded-full
+        bg-white/20
+        backdrop-blur-sm
+        flex
+        items-center
+        justify-center
+        group-hover:bg-white/30
+        transition-all
+      ">
+        <MessageCircle
+          size={30}
+          strokeWidth={2.5}
+          className="text-white"
+        />
+      </div>
+
+      <div className="text-left">
+        <p className="text-green-100 text-xs font-medium uppercase tracking-wide">
+          Atendimento imediato
+        </p>
+
+        <h3 className="text-white text-xl font-bold leading-tight">
+          Conversar no WhatsApp
+        </h3>
+      </div>
+
     </div>
 
-    <div className="flex flex-col items-start leading-none">
-      <span className="text-xs text-green-100">
-        Atendimento imediato
-      </span>
-
-      <span className="text-lg font-bold text-white">
-        Conversar no WhatsApp
-      </span>
+    <div className="text-white text-3xl group-hover:translate-x-1 transition-all">
+      →
     </div>
+
   </div>
 </Button>
 
