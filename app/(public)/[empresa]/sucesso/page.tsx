@@ -117,7 +117,7 @@ console.log("Telefone encontrado:", numero);
 
         <div className="mt-8 space-y-3">
 
-          <Button
+      <Button
   fullWidth
   onClick={() => {
     if (!whatsapp) {
@@ -125,17 +125,56 @@ console.log("Telefone encontrado:", numero);
       return;
     }
 
+    const texto = `
+Olá! 😊
+
+Acabei de realizar um agendamento.
+
+👤 Nome: ${booking.cliente?.nome || ""}
+
+📱 WhatsApp: ${booking.cliente?.whatsapp || ""}
+
+✂️ Serviço: ${booking.servico?.nome || ""}
+
+💇 Profissional: ${booking.profissional?.nome || ""}
+
+📅 Data: ${dataFormatada}
+
+🕒 Horário: ${booking.horario || ""}
+
+Gostaria de confirmar meu atendimento.
+`;
+
     window.open(
-      `https://wa.me/55${whatsapp}?text=${encodeURIComponent(
-        "Olá! Acabei de realizar um agendamento pelo FlowAgenda e gostaria de falar com vocês."
-      )}`,
+      `https://wa.me/55${whatsapp}?text=${encodeURIComponent(texto)}`,
       "_blank"
     );
   }}
-  className="h-14 rounded-2xl bg-[#25D366] text-white font-semibold shadow-lg hover:bg-[#1EBE5D] transition-all"
+  className="
+    h-16
+    rounded-2xl
+    bg-[#25D366]
+    text-white
+    font-bold
+    text-lg
+    shadow-xl
+    border-2
+    border-green-400
+    hover:bg-[#20BD5A]
+    hover:shadow-2xl
+    hover:scale-[1.02]
+    active:scale-[0.98]
+    transition-all
+    duration-300
+  "
 >
-  <MessageCircle size={22} className="mr-2" />
-  Falar no WhatsApp
+  <MessageCircle
+    size={26}
+    strokeWidth={2.5}
+    className="mr-3"
+  />
+
+  <span>Conversar no WhatsApp</span>
 </Button>
 
           <Link href={`/${empresa}`}>
