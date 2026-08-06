@@ -154,27 +154,34 @@ Gostaria de confirmar meu atendimento.
     h-16
     rounded-2xl
     bg-[#25D366]
-    text-white
-    font-bold
-    text-lg
-    shadow-xl
-    border-2
-    border-green-400
-    hover:bg-[#20BD5A]
-    hover:shadow-2xl
-    hover:scale-[1.02]
-    active:scale-[0.98]
+    hover:bg-[#1EBE5D]
+    shadow-lg
+    hover:shadow-xl
     transition-all
     duration-300
+    border
+    border-green-400
   "
 >
-  <MessageCircle
-    size={26}
-    strokeWidth={2.5}
-    className="mr-3"
-  />
+  <div className="flex items-center justify-center gap-3 w-full">
+    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+      <MessageCircle
+        size={22}
+        strokeWidth={2.5}
+        className="text-white"
+      />
+    </div>
 
-  <span>Conversar no WhatsApp</span>
+    <div className="flex flex-col items-start leading-none">
+      <span className="text-xs text-green-100">
+        Atendimento imediato
+      </span>
+
+      <span className="text-lg font-bold text-white">
+        Conversar no WhatsApp
+      </span>
+    </div>
+  </div>
 </Button>
 
           <Link href={`/${empresa}`}>
