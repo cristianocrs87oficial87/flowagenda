@@ -97,37 +97,6 @@ router.push(`/${empresa}/servicos`);
         ) : (
           <div className="space-y-4">
 
-  <button
-    type="button"
-    onClick={() =>
-      selecionarProfissional({
-        id: "qualquer",
-        nome: "Qualquer profissional disponível",
-        foto: null,
-      })
-    }
-    className="w-full text-left"
-  >
-    <Card className="cursor-pointer border-2 border-violet-500 hover:border-violet-700 transition-all">
-      <div className="flex items-center gap-4">
-
-        <div className="w-14 h-14 rounded-full bg-violet-100 flex items-center justify-center text-2xl">
-          ⭐
-        </div>
-
-        <div>
-          <h2 className="font-semibold">
-            Qualquer profissional disponível
-          </h2>
-
-          <p className="text-sm text-zinc-500">
-            Agende com o primeiro profissional disponível.
-          </p>
-        </div>
-
-      </div>
-    </Card>
-  </button>
 
   {profissionais.map((profissional) => (
               <button
