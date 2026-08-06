@@ -29,17 +29,14 @@ useEffect(() => {
 }, []);
 
 async function carregarWhatsapp() {
-  const { data } = await supabase
+  console.log("ENTROU NA FUNÇÃO");
+
+  const resposta = await supabase
     .from("empresas")
-    .select("whatsapp")
-    .eq("slug", empresa)
-    .single();
+    .select("*")
+    .eq("slug", empresa);
 
-  if (!data?.whatsapp) return;
-
-  const numero = data.whatsapp.replace(/\D/g, "");
-
-  setWhatsapp(numero);
+  console.log("RESPOSTA:", resposta);
 }
   return (
     <main className="min-h-screen bg-zinc-100 flex items-center justify-center p-6">
