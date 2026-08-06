@@ -111,8 +111,7 @@ console.log("Telefone encontrado:", numero);
 
         <div className="mt-8 space-y-3">
 
-      <Button
-  fullWidth
+     <Button
   onClick={() => {
     if (!whatsapp) {
       alert("WhatsApp não configurado pela empresa.");
@@ -145,19 +144,25 @@ Gostaria de confirmar meu atendimento.
     );
   }}
   className="
-    h-14
-    rounded-2xl
+    mx-auto
+    flex
+    items-center
+    gap-2
+    rounded-full
     bg-[#25D366]
     hover:bg-[#20BD5A]
+    px-6
+    py-2
+    text-sm
+    font-medium
     text-white
-    font-semibold
-    shadow-lg
+    shadow-md
     transition-all
     duration-300
   "
 >
-  <MessageCircle size={20} className="mr-2" />
-  Conversar no WhatsApp
+  <MessageCircle size={18} />
+  WhatsApp
 </Button>
 
           <Link href={`/${empresa}`}>
