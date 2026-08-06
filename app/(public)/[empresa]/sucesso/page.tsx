@@ -109,12 +109,6 @@ console.log("Telefone encontrado:", numero);
 
         </div>
 
-        <div className="mt-8 rounded-xl bg-green-50 border border-green-200 p-4">
-          <p className="text-green-700 font-medium">
-            ✅ Enviamos a confirmação para seu WhatsApp.
-          </p>
-        </div>
-
         <div className="mt-8 space-y-3">
 
       <Button
@@ -151,63 +145,19 @@ Gostaria de confirmar meu atendimento.
     );
   }}
   className="
-    group
-    h-20
-    rounded-3xl
-    bg-gradient-to-r
-    from-[#25D366]
-    to-[#1EBE5D]
-    shadow-xl
-    hover:shadow-2xl
-    hover:scale-[1.02]
-    active:scale-[0.98]
+    h-14
+    rounded-2xl
+    bg-[#25D366]
+    hover:bg-[#20BD5A]
+    text-white
+    font-semibold
+    shadow-lg
     transition-all
     duration-300
-    border
-    border-green-300
-    overflow-hidden
   "
 >
-  <div className="flex items-center justify-between w-full px-6">
-
-    <div className="flex items-center gap-4">
-
-      <div className="
-        w-14
-        h-14
-        rounded-full
-        bg-white/20
-        backdrop-blur-sm
-        flex
-        items-center
-        justify-center
-        group-hover:bg-white/30
-        transition-all
-      ">
-        <MessageCircle
-          size={30}
-          strokeWidth={2.5}
-          className="text-white"
-        />
-      </div>
-
-      <div className="text-left">
-        <p className="text-green-100 text-xs font-medium uppercase tracking-wide">
-          Atendimento imediato
-        </p>
-
-        <h3 className="text-white text-xl font-bold leading-tight">
-          Conversar no WhatsApp
-        </h3>
-      </div>
-
-    </div>
-
-    <div className="text-white text-3xl group-hover:translate-x-1 transition-all">
-      →
-    </div>
-
-  </div>
+  <MessageCircle size={20} className="mr-2" />
+  Conversar no WhatsApp
 </Button>
 
           <Link href={`/${empresa}`}>
